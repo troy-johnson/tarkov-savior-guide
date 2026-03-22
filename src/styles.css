@@ -620,3 +620,137 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+.details-section--standalone {
+  margin-top: 2rem;
+}
+
+.storyline-grid,
+.analysis-grid,
+.quest-info-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.storyline-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.storyline-card,
+.analysis-panel,
+.quest-info-card {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.storyline-card {
+  gap: 1rem;
+}
+
+.storyline-card__header,
+.quest-info-card__header,
+.quest-info-card__footer,
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.progress-bar {
+  height: 0.7rem;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ffd18c);
+}
+
+.storyline-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.storyline-stats dt,
+.quest-info-card__grid .meta-label,
+.metric-row p,
+.dependency-item p,
+.empty-state {
+  color: var(--text-dim);
+}
+
+.analysis-grid {
+  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.section-heading--compact {
+  margin-bottom: 1.2rem;
+}
+
+.map-breakdown-list,
+.dependency-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.metric-row,
+.dependency-item,
+.quest-info-card__grid {
+  padding: 1rem;
+  background: #151213;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-row span,
+.status-chip {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.quest-info-card__description {
+  margin: 1rem 0 1.25rem;
+  color: var(--text-dim);
+}
+
+.quest-info-card__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.quest-info-card__footer {
+  margin-top: 1rem;
+  color: var(--text-faint);
+}
+
+.status-chip {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 184, 77, 0.08);
+}
+
+.status-chip--blocked {
+  color: #ffb0b0;
+  background: rgba(180, 47, 47, 0.14);
+}
+
+.status-chip--done {
+  color: #dfe0bc;
+  background: rgba(214, 220, 175, 0.12);
+}
+
+@media (max-width: 720px) {
+  .storyline-card__header,
+  .quest-info-card__header,
+  .quest-info-card__footer,
+  .metric-row,
+  .storyline-stats,
+  .quest-info-card__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
