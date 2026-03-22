@@ -109,7 +109,9 @@ function App() {
       ) : null}
 
       {activeTab === 'STORYLINE_PROGRESS' ? <StorylineProgressView sharedTasks={sharedTasks} /> : null}
-      {activeTab === 'QUEST_INFORMATION' ? <QuestInformationView sharedTasks={sharedTasks} /> : null}
+      {activeTab === 'QUEST_INFORMATION' ? (
+        <QuestInformationView sharedTasks={sharedTasks} setStatus={setStatus} updateTask={updateTask} />
+      ) : null}
 
       <footer className="footer-bar">
         <span>◼ CONNECTION: SECURE</span>

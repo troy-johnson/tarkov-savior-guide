@@ -14,9 +14,9 @@
 ### User interactions that are real
 - Joining/changing a run ID updates local storage and reloads that run.
 - Marking an objective complete in the directive list updates the underlying task progress.
-- Changing status in a task card updates the underlying task progress.
-- Moving the completion slider updates the underlying task progress.
-- Editing the field note updates the underlying task progress and sets status to `in_progress`.
+- Changing status in a task card or quest detail card updates the underlying task progress.
+- Moving the completion slider in either dashboard editing surface updates the underlying task progress.
+- Editing the field note in either editing surface updates the underlying task progress and sets status to `in_progress`.
 - Completion percentage in the dashboard is derived from the live task progress values.
 - Switching tabs changes the rendered dashboard view for `PRIORITY_DEPLOYMENT`, `STORYLINE_PROGRESS`, and `QUEST_INFORMATION`.
 
