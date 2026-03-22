@@ -10,6 +10,13 @@ interface TaskCardProps {
   onNoteChange: (taskId: string, note: string) => void;
 }
 
+const statusLabel: Record<TaskStatus, string> = {
+  not_started: 'Pending',
+  in_progress: 'Tracking',
+  blocked: 'Blocked',
+  done: 'Complete',
+};
+
 export function TaskCard({ task, onStatusChange, onPercentChange, onNoteChange }: TaskCardProps) {
   const handlePercent = (event: ChangeEvent<HTMLInputElement>) => {
     onPercentChange(task.id, Number(event.target.value));
@@ -19,19 +26,22 @@ export function TaskCard({ task, onStatusChange, onPercentChange, onNoteChange }
     <article className="task-card">
       <div className="task-card__header">
         <div>
-          <p className="task-card__eyebrow">{task.storyline} · {task.map}</p>
+          <p className="task-card__eyebrow">{task.storyline} // {task.map}</p>
           <h3>{task.sort_order}. {task.title}</h3>
         </div>
-        <select value={task.progress.status} onChange={(event) => onStatusChange(task.id, event.target.value as TaskStatus)}>
-          {statusOptions.map((status) => (
-            <option key={status} value={status}>
-              {status.replace('_', ' ')}
-            </option>
-          ))}
-        </select>
+        <label className="task-card__select">
+          <span className="meta-label">STATUS</span>
+          <select value={task.progress.status} onChange={(event) => onStatusChange(task.id, event.target.value as TaskStatus)}>
+            {statusOptions.map((status) => (
+              <option key={status} value={status}>
+                {statusLabel[status]}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <p>{task.description}</p>
+      <p className="task-card__description">{task.description}</p>
 
       <dl className="task-card__meta">
         <div>
@@ -54,12 +64,12 @@ export function TaskCard({ task, onStatusChange, onPercentChange, onNoteChange }
       </label>
 
       <label className="task-card__note">
-        <span>Current note</span>
+        <span>Field note</span>
         <textarea
           rows={3}
           value={task.progress.current_note}
           onChange={(event) => onNoteChange(task.id, event.target.value)}
-          placeholder="Where are you currently at?"
+          placeholder="Log the current state of this objective..."
         />
       </label>
 
