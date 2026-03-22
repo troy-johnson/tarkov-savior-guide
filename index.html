@@ -4,9 +4,148 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tarkov Savior Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Work+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="app-shell">
+      <aside class="nav-rail">
+        <div>
+          <p class="eyebrow">TACTICAL STACK</p>
+          <h1>TARKOV SAVIOR</h1>
+        </div>
+
+        <nav class="nav-groups" aria-label="Primary">
+          <button class="nav-item nav-item-active">DASHBOARD</button>
+          <button class="nav-item">OBJECTIVES</button>
+          <button class="nav-item">LOADOUTS</button>
+          <button class="nav-item">INTEL FEED</button>
+          <button class="nav-item">EXTRACTS</button>
+        </nav>
+
+        <div class="nav-footer panel">
+          <p class="panel-label">ACTIVE RAID</p>
+          <p class="nav-footer-map">Streets of Tarkov</p>
+          <p class="muted">Prime route synced to command layer.</p>
+        </div>
+      </aside>
+
+      <main class="dashboard-layout">
+        <header class="top-row panel">
+          <div>
+            <p class="panel-label">STATUS ROW</p>
+            <h2>OPERATION OVERWATCH</h2>
+          </div>
+
+          <div class="top-row-meta">
+            <div>
+              <p class="panel-label">TEAM STATE</p>
+              <p class="value-amber">STAGING</p>
+            </div>
+            <div>
+              <p class="panel-label">FRESHNESS</p>
+              <p id="freshnessStamp">Updated just now</p>
+            </div>
+            <button id="refreshButton" class="refresh-button" type="button">REFRESH INTEL</button>
+          </div>
+        </header>
+
+        <section class="objective-area panel" aria-labelledby="objective-heading">
+          <div class="section-heading">
+            <div>
+              <p class="panel-label">CENTRAL OBJECTIVE</p>
+              <h2 id="objective-heading">SECURE KIBA, SWEEP MEDICAL, HOLD EXFIL OPTIONS</h2>
+            </div>
+            <div class="objective-tag">PRIORITY ALPHA</div>
+          </div>
+
+          <div class="objective-grid">
+            <article class="tone-card tone-card-hot">
+              <p class="panel-label">PRIMARY TASK</p>
+              <h3>ENTER INTERCHANGE VIA POWER SIDE</h3>
+              <p>
+                Open with a dark flank, clear the front mall lanes, and pivot toward KIBA after confirming escalator audio.
+              </p>
+            </article>
+
+            <article class="tone-card">
+              <p class="panel-label">TACTICAL NOTES</p>
+              <ul>
+                <li>Watch for early tech store contests from IDEA hall.</li>
+                <li>Maintain hard cover breaks between glass sightlines.</li>
+                <li>Call timing before every cross through center floor.</li>
+              </ul>
+            </article>
+
+            <article class="tone-card">
+              <p class="panel-label">READY CHECK</p>
+              <div class="stats-row">
+                <div>
+                  <span class="stat-value">03</span>
+                  <span class="stat-label">OPERATORS</span>
+                </div>
+                <div>
+                  <span class="stat-value">02</span>
+                  <span class="stat-label">MEDS</span>
+                </div>
+                <div>
+                  <span class="stat-value">04</span>
+                  <span class="stat-label">KEYS</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="intel-stack">
+          <section class="map-panel panel" aria-labelledby="map-heading">
+            <div class="section-heading compact-heading">
+              <div>
+                <p class="panel-label">TACTICAL MAP</p>
+                <h2 id="map-heading">INTERCHANGE GRID</h2>
+              </div>
+              <div class="map-legend">LIVE ROUTE</div>
+            </div>
+
+            <div class="map-surface" aria-hidden="true">
+              <div class="map-grid"></div>
+              <div class="map-path"></div>
+              <div class="map-node map-node-one"></div>
+              <div class="map-node map-node-two"></div>
+              <div class="map-node map-node-three"></div>
+            </div>
+          </section>
+
+          <section class="boss-panel panel" aria-labelledby="boss-heading">
+            <div class="section-heading compact-heading">
+              <div>
+                <p class="panel-label">BOSS INTEL</p>
+                <h2 id="boss-heading">KILLA PRESENCE</h2>
+              </div>
+              <div class="objective-tag subdued-tag">TRACKED</div>
+            </div>
+
+            <div class="boss-stack">
+              <article class="tone-card boss-card">
+                <p class="panel-label">LAST SIGNAL</p>
+                <h3>GUNFIRE NEAR BRUTAL / ADIK</h3>
+                <p>Likely rotating central mall after contact. Expect aggressive re-peeks.</p>
+              </article>
+              <article class="tone-card boss-card">
+                <p class="panel-label">ENGAGEMENT POSTURE</p>
+                <p>Force distance. Bait voice lines and hold angle discipline before re-swinging.</p>
+              </article>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
