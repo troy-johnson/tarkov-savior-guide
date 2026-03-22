@@ -28,7 +28,7 @@
 ## What is only derived UI right now
 These sections are currently presentation-layer only and are **not** backed by dedicated database tables or live game feeds:
 
-- Top nav tabs are real conditional views, but they are still local UI state rather than route-based navigation.
+- Top nav tabs now sync to hash-based deep links so each dashboard view can be opened directly in the browser.
 - Map telemetry cards are generated from a hardcoded `mapTelemetry` object in `src/components/dashboard/dashboardData.ts`.
 - Boss intel is generated from a hardcoded `bossIntelByMap` object in `src/components/dashboard/dashboardData.ts`.
 - Gear recommendations are derived from task requirements via `toGearList()` in `src/components/dashboard/dashboardData.ts`.
@@ -42,9 +42,9 @@ These sections are currently presentation-layer only and are **not** backed by d
 ## What is not wired up / still missing
 
 ### Routing / navigation
-- The app does **not** currently use route-based navigation.
-- Switching tabs changes local `activeTab` UI state rather than the URL.
-- There are still not separate route entries or deep links for the three dashboard views.
+- The app now uses hash-based route entries for the three dashboard views.
+- Switching tabs updates the URL hash, and browser back/forward navigation restores the selected view.
+- Full nested page routing still does not exist beyond the three top-level dashboard routes.
 
 ### STORYLINE_PROGRESS follow-up work
 The view now exists, but still has room to become more real.
@@ -96,7 +96,7 @@ If we want the dashboard to become fully data-driven, we likely need additional 
 - Dedicated conditional views for `PRIORITY_DEPLOYMENT`, `STORYLINE_PROGRESS`, and `QUEST_INFORMATION`
 
 ### Not actually live today
-- Real tab/page routing
+- Full router-backed navigation beyond the top-level hash routes
 - Real boss intel feed
 - Real map data
 - Real logistics feed

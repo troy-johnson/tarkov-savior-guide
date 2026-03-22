@@ -131,6 +131,14 @@ textarea {
   font-weight: 700;
 }
 
+.brand-subtitle {
+  margin-top: 0.35rem;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .topbar__nav {
   display: flex;
   gap: 1rem;

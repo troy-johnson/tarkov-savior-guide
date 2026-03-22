@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { tabs, type TabKey } from './components/dashboard/dashboardData';
+import { useEffect, useMemo, useState } from 'react';
+import { getTabFromHash, tabs, tabMeta, type TabKey } from './components/dashboard/dashboardData';
 import { PriorityDeploymentView } from './components/views/PriorityDeploymentView';
 import { QuestInformationView } from './components/views/QuestInformationView';
 import { StorylineProgressView } from './components/views/StorylineProgressView';
@@ -8,18 +8,42 @@ import { useSharedProgress } from './hooks/useSharedProgress';
 function App() {
   const { completion, error, loading, refresh, run, selectRun, setStatus, sharedTasks, syncMode, updateTask } = useSharedProgress();
   const [runInput, setRunInput] = useState(run.id);
-  const [activeTab, setActiveTab] = useState<TabKey>('PRIORITY_DEPLOYMENT');
+  const [activeTab, setActiveTab] = useState<TabKey>(() => getTabFromHash(window.location.hash));
 
   useEffect(() => {
     setRunInput(run.id);
   }, [run.id]);
 
+  useEffect(() => {
+    const syncTabFromLocation = () => {
+      setActiveTab(getTabFromHash(window.location.hash));
+    };
+
+    syncTabFromLocation();
+    window.addEventListener('hashchange', syncTabFromLocation);
+
+    return () => {
+      window.removeEventListener('hashchange', syncTabFromLocation);
+    };
+  }, []);
+
+  useEffect(() => {
+    const nextHash = tabMeta[activeTab].hash;
+    if (window.location.hash !== nextHash) {
+      window.location.hash = nextHash;
+    }
+  }, [activeTab]);
+
   const activeTask = sharedTasks.find((task) => task.progress.status !== 'done') ?? sharedTasks[0];
+  const activeTabMeta = useMemo(() => tabMeta[activeTab], [activeTab]);
 
   return (
     <main className="dashboard-shell">
       <header className="topbar">
-        <div className="brand">TARKOV_SAVIOR_GUIDE</div>
+        <div>
+          <div className="brand">TARKOV_SAVIOR_GUIDE</div>
+          <div className="brand-subtitle">{activeTabMeta.description}</div>
+        </div>
         <nav className="topbar__nav" aria-label="Dashboard views">
           {tabs.map((tab) => (
             <button
@@ -27,8 +51,9 @@ function App() {
               type="button"
               className={`tab-button${tab === activeTab ? ' is-active' : ''}`}
               onClick={() => setActiveTab(tab)}
+              aria-current={tab === activeTab ? 'page' : undefined}
             >
-              {tab}
+              {tabMeta[tab].label}
             </button>
           ))}
         </nav>
@@ -61,6 +86,10 @@ function App() {
             <span className="meta-label">AVERAGE COMPLETION</span>
             <strong>{completion}%</strong>
           </div>
+          <div>
+            <span className="meta-label">DIRECT LINK</span>
+            <strong>{activeTabMeta.hash}</strong>
+          </div>
         </div>
       </section>
 
@@ -84,6 +113,7 @@ function App() {
         <span>◼ CONNECTION: SECURE</span>
         <span>LATENCY: 24MS</span>
         <span>VER: 0.14.9.SAVIOR</span>
+        <span>VIEW: {activeTabMeta.label}</span>
         <span>CURRENT TIME: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
       </footer>
     </main>

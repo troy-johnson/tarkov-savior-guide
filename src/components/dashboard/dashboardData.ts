@@ -3,6 +3,29 @@ import type { SharedTaskView, TaskStatus } from '../../types';
 export const tabs = ['PRIORITY_DEPLOYMENT', 'STORYLINE_PROGRESS', 'QUEST_INFORMATION'] as const;
 export type TabKey = (typeof tabs)[number];
 
+export const tabMeta: Record<TabKey, { hash: string; label: string; description: string }> = {
+  PRIORITY_DEPLOYMENT: {
+    hash: '#/priority-deployment',
+    label: 'PRIORITY DEPLOYMENT',
+    description: 'Live deployment board for the active squad objective.',
+  },
+  STORYLINE_PROGRESS: {
+    hash: '#/storyline-progress',
+    label: 'STORYLINE PROGRESS',
+    description: 'Progress rollup across questlines, maps, and blockers.',
+  },
+  QUEST_INFORMATION: {
+    hash: '#/quest-information',
+    label: 'QUEST INFORMATION',
+    description: 'Detailed quest intelligence, requirements, and evidence.',
+  },
+};
+
+export function getTabFromHash(hash: string): TabKey {
+  const matchedTab = tabs.find((tab) => tabMeta[tab].hash === hash);
+  return matchedTab ?? 'PRIORITY_DEPLOYMENT';
+}
+
 export const statusLabel: Record<TaskStatus, string> = {
   not_started: 'Pending',
   in_progress: 'Tracking',
