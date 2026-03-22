@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "check": "node --check src/main.js"
+    "check": "tsc -b --pretty false"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
