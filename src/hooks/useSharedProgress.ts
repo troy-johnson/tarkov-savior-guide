@@ -35,6 +35,7 @@ export function useSharedProgress() {
   const [loading, setLoading] = useState(true);
   const [syncMode, setSyncMode] = useState<'supabase' | 'local-seed'>(isSupabaseConfigured ? 'supabase' : 'local-seed');
   const [error, setError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
   const hydrateDefaults = useCallback((taskList: TaskDefinition[], runId: string, rows: TaskProgressRecord[] = []) => {
     const nextProgress = Object.fromEntries(
@@ -109,7 +110,7 @@ export function useSharedProgress() {
     return () => {
       active = false;
     };
-  }, [client, hydrateDefaults, run.id, run.name]);
+  }, [client, hydrateDefaults, reloadToken, run.id, run.name]);
 
   useEffect(() => {
     if (!client) {
@@ -175,6 +176,10 @@ export function useSharedProgress() {
     });
   }, []);
 
+  const refresh = useCallback(async () => {
+    setReloadToken((current) => current + 1);
+  }, []);
+
   const sharedTasks = useMemo<SharedTaskView[]>(() => {
     return [...tasks]
       .sort((a, b) => a.sort_order - b.sort_order)
@@ -205,6 +210,7 @@ export function useSharedProgress() {
     completion,
     error,
     loading,
+    refresh,
     run,
     schemaSql,
     selectRun,
