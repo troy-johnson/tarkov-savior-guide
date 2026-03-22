@@ -4,6 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tarkov Savior Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Escape from Tarkov</p>
+          <h1>Tactical raid data</h1>
+          <p class="subtitle">
+            Pull the latest tactical map image from Tarkov.dev and the selected map's boss intel
+            source from EFT Boss.
+          </p>
+        </div>
+        <div class="controls">
+          <label class="map-picker">
+            <span>Map</span>
+            <select id="map-select" aria-label="Choose map"></select>
+          </label>
+          <button id="refresh-btn" type="button">REFRESH_RAID_DATA</button>
+          <p id="updated-at" class="updated-at">Last updated never</p>
+        </div>
+      </header>
+
+      <section class="status-grid" aria-label="Data source status">
+        <article class="status-card">
+          <div class="status-card__header">
+            <h2>Tarkov.dev tactical map</h2>
+            <span id="map-status" class="badge badge--loading">Loading</span>
+          </div>
+          <p id="map-status-copy" class="status-copy">Waiting for map payload…</p>
+          <a id="map-source" class="source-link" href="#" target="_blank" rel="noreferrer">Open Tarkov.dev source</a>
+        </article>
+
+        <article class="status-card">
+          <div class="status-card__header">
+            <h2>EFT Boss intel</h2>
+            <span id="boss-status" class="badge badge--loading">Loading</span>
+          </div>
+          <p id="boss-status-copy" class="status-copy">Waiting for boss payload…</p>
+          <a id="boss-source" class="source-link" href="#" target="_blank" rel="noreferrer">Open EFT Boss source</a>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel map-panel">
+          <div class="panel__header">
+            <div>
+              <p class="eyebrow">Tactical map</p>
+              <h2 id="map-title">Loading…</h2>
+            </div>
+          </div>
+          <div class="map-frame">
+            <img id="map-image" alt="Selected tactical map" />
+            <div id="map-empty" class="empty-state">Tarkov.dev tactical map unavailable.</div>
+          </div>
+        </article>
+
+        <article class="panel boss-panel">
+          <div class="panel__header">
+            <div>
+              <p class="eyebrow">Boss intel</p>
+              <h2 id="boss-title">Loading…</h2>
+            </div>
+          </div>
+          <ul id="boss-list" class="boss-list"></ul>
+          <div id="boss-empty" class="empty-state">No EFT Boss intel is available for this map.</div>
+        </article>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
