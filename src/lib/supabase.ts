@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { seedTasks } from '../data/tasks';
 import type { BossIntelRecord, MapTelemetryRecord, RunRecord, TaskDefinition, TaskProgressRecord } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -67,6 +68,35 @@ export function getSupabaseClient(): SupabaseClient<AppDatabase> | null {
   return cachedClient;
 }
 
+const escapeSqlString = (value: string) => value.replaceAll("'", "''");
+
+const taskSeedSql = seedTasks
+  .map(
+    (task) => `
+insert into public.tasks (id, title, storyline, sort_order, map, description, requirements, dependencies_json, major_evidence)
+values (
+  '${escapeSqlString(task.id)}',
+  '${escapeSqlString(task.title)}',
+  '${escapeSqlString(task.storyline)}',
+  ${task.sort_order},
+  '${escapeSqlString(task.map)}',
+  '${escapeSqlString(task.description)}',
+  '${escapeSqlString(JSON.stringify(task.requirements))}'::jsonb,
+  '${escapeSqlString(JSON.stringify(task.dependencies_json))}'::jsonb,
+  '${escapeSqlString(task.major_evidence)}'
+)
+on conflict (id) do update set
+  title = excluded.title,
+  storyline = excluded.storyline,
+  sort_order = excluded.sort_order,
+  map = excluded.map,
+  description = excluded.description,
+  requirements = excluded.requirements,
+  dependencies_json = excluded.dependencies_json,
+  major_evidence = excluded.major_evidence;`,
+  )
+  .join('\n');
+
 export const schemaSql = `
 create table if not exists public.runs (
   id text primary key,
@@ -115,6 +145,8 @@ create table if not exists public.boss_intel (
   priority text not null default 'HIGH',
   updated_at timestamptz not null default timezone('utc', now())
 );
+
+${taskSeedSql}
 
 alter publication supabase_realtime add table public.task_progress;
 alter publication supabase_realtime add table public.map_telemetry;

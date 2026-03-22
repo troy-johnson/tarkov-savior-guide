@@ -98,7 +98,8 @@ export function useSharedProgress() {
           throw taskError ?? runError ?? progressError ?? telemetryError ?? bossError;
         }
 
-        const resolvedTasks = taskRows && taskRows.length > 0 ? taskRows : seedTasks;
+        const shouldSeedTasks = (taskRows ?? []).length === 0;
+        const resolvedTasks = shouldSeedTasks ? seedTasks : taskRows ?? seedTasks;
         const resolvedTelemetry = telemetryRows && telemetryRows.length > 0 ? toRecordByMap(telemetryRows) : seedMapTelemetry;
         const resolvedBossIntel = bossRows && bossRows.length > 0 ? toRecordByMap(bossRows) : seedBossIntelByMap;
 
@@ -118,6 +119,13 @@ export function useSharedProgress() {
           }
         } else {
           setRun(runRows);
+        }
+
+        if (shouldSeedTasks) {
+          const { error: taskUpsertError } = await client.from('tasks').upsert(seedTasks as never);
+          if (taskUpsertError) {
+            throw taskUpsertError;
+          }
         }
 
         if ((telemetryRows ?? []).length === 0) {
