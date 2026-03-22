@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { seedTasks } from '../data/tasks';
+import { seedBossIntelByMap, seedMapTelemetry } from '../components/dashboard/dashboardData';
 import { getSupabaseClient, isSupabaseConfigured, schemaSql } from '../lib/supabase';
-import type { RunRecord, SharedTaskView, TaskDefinition, TaskProgressRecord, TaskStatus } from '../types';
+import type {
+  BossIntelRecord,
+  MapTelemetryRecord,
+  RunRecord,
+  SharedTaskView,
+  TaskDefinition,
+  TaskProgressRecord,
+  TaskStatus,
+} from '../types';
 
 const STORAGE_KEY = 'tarkov-savior-guide-run';
 const DEFAULT_RUN_ID = 'shared-savior-run';
 const DEFAULT_RUN_NAME = 'Shared Savior Run';
+const DEFAULT_MAP = 'Labs';
 
 const createDefaultProgress = (runId: string, taskId: string): TaskProgressRecord => ({
   run_id: runId,
@@ -23,6 +33,11 @@ const writeLocalRunId = (runId: string) => {
   }
 };
 
+const mapTelemetrySeedRows = Object.values(seedMapTelemetry);
+const bossIntelSeedRows = Object.values(seedBossIntelByMap);
+
+const toRecordByMap = <T extends { map: string }>(rows: T[]) => Object.fromEntries(rows.map((row) => [row.map, row]));
+
 export function useSharedProgress() {
   const client = getSupabaseClient();
   const [run, setRun] = useState<RunRecord>({
@@ -32,6 +47,8 @@ export function useSharedProgress() {
   });
   const [tasks, setTasks] = useState<TaskDefinition[]>(seedTasks);
   const [progressByTask, setProgressByTask] = useState<Record<string, TaskProgressRecord>>({});
+  const [mapTelemetryByMap, setMapTelemetryByMap] = useState<Record<string, MapTelemetryRecord>>(seedMapTelemetry);
+  const [bossIntelByMap, setBossIntelByMap] = useState<Record<string, BossIntelRecord>>(seedBossIntelByMap);
   const [loading, setLoading] = useState(true);
   const [syncMode, setSyncMode] = useState<'supabase' | 'local-seed'>(isSupabaseConfigured ? 'supabase' : 'local-seed');
   const [error, setError] = useState<string | null>(null);
@@ -56,36 +73,65 @@ export function useSharedProgress() {
 
       if (!client) {
         hydrateDefaults(seedTasks, run.id);
+        setMapTelemetryByMap(seedMapTelemetry);
+        setBossIntelByMap(seedBossIntelByMap);
         setLoading(false);
         return;
       }
 
       try {
-        const [{ data: taskRows, error: taskError }, { data: runRows, error: runError }, { data: progressRows, error: progressError }] = await Promise.all([
+        const [
+          { data: taskRows, error: taskError },
+          { data: runRows, error: runError },
+          { data: progressRows, error: progressError },
+          { data: telemetryRows, error: telemetryError },
+          { data: bossRows, error: bossError },
+        ] = await Promise.all([
           client.from('tasks').select('*').order('sort_order', { ascending: true }),
           client.from('runs').select('*').eq('id', run.id).maybeSingle(),
           client.from('task_progress').select('*').eq('run_id', run.id),
+          client.from('map_telemetry').select('*'),
+          client.from('boss_intel').select('*'),
         ]);
 
-        if (taskError || runError || progressError) {
-          throw taskError ?? runError ?? progressError;
+        if (taskError || runError || progressError || telemetryError || bossError) {
+          throw taskError ?? runError ?? progressError ?? telemetryError ?? bossError;
         }
 
         const resolvedTasks = taskRows && taskRows.length > 0 ? taskRows : seedTasks;
+        const resolvedTelemetry = telemetryRows && telemetryRows.length > 0 ? toRecordByMap(telemetryRows) : seedMapTelemetry;
+        const resolvedBossIntel = bossRows && bossRows.length > 0 ? toRecordByMap(bossRows) : seedBossIntelByMap;
+
         if (!active) {
           return;
         }
 
         setTasks(resolvedTasks);
+        setMapTelemetryByMap(resolvedTelemetry);
+        setBossIntelByMap(resolvedBossIntel);
 
         if (!runRows) {
           const insertedRun: RunRecord = { id: run.id, name: run.name, created_at: new Date().toISOString() };
-          const { error: insertRunError } = await client.from('runs').upsert(insertedRun);
+          const { error: insertRunError } = await client.from('runs').upsert(insertedRun as never);
           if (insertRunError) {
             throw insertRunError;
           }
         } else {
           setRun(runRows);
+        }
+
+        if ((telemetryRows ?? []).length === 0) {
+          const { error: telemetryUpsertError } = await client.from('map_telemetry').upsert(mapTelemetrySeedRows as never);
+          if (telemetryUpsertError) {
+            throw telemetryUpsertError;
+          }
+        }
+
+        if ((bossRows ?? []).length === 0) {
+          const { error: bossUpsertError } = await client.from('boss_intel').upsert(bossIntelSeedRows as never);
+          if (bossUpsertError) {
+            throw bossUpsertError;
+          }
         }
 
         hydrateDefaults(resolvedTasks, run.id, progressRows ?? []);
@@ -96,6 +142,8 @@ export function useSharedProgress() {
         }
         setError(loadError instanceof Error ? loadError.message : 'Unable to load shared progress');
         setTasks(seedTasks);
+        setMapTelemetryByMap(seedMapTelemetry);
+        setBossIntelByMap(seedBossIntelByMap);
         hydrateDefaults(seedTasks, run.id);
         setSyncMode('local-seed');
       } finally {
@@ -117,7 +165,7 @@ export function useSharedProgress() {
       return;
     }
 
-    const channel = client
+    const taskProgressChannel = client
       .channel(`task_progress:${run.id}`)
       .on(
         'postgres_changes',
@@ -135,8 +183,38 @@ export function useSharedProgress() {
       )
       .subscribe();
 
+    const mapTelemetryChannel = client
+      .channel('map_telemetry')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'map_telemetry' }, (payload) => {
+        const next = payload.new as MapTelemetryRecord;
+        if (!next?.map) {
+          return;
+        }
+        setMapTelemetryByMap((current) => ({
+          ...current,
+          [next.map]: next,
+        }));
+      })
+      .subscribe();
+
+    const bossIntelChannel = client
+      .channel('boss_intel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'boss_intel' }, (payload) => {
+        const next = payload.new as BossIntelRecord;
+        if (!next?.map) {
+          return;
+        }
+        setBossIntelByMap((current) => ({
+          ...current,
+          [next.map]: next,
+        }));
+      })
+      .subscribe();
+
     return () => {
-      void client.removeChannel(channel);
+      void client.removeChannel(taskProgressChannel);
+      void client.removeChannel(mapTelemetryChannel);
+      void client.removeChannel(bossIntelChannel);
     };
   }, [client, run.id]);
 
@@ -158,7 +236,7 @@ export function useSharedProgress() {
         return;
       }
 
-      const { error: upsertError } = await client.from('task_progress').upsert(next);
+      const { error: upsertError } = await client.from('task_progress').upsert(next as never);
       if (upsertError) {
         setError(upsertError.message);
       }
@@ -193,9 +271,7 @@ export function useSharedProgress() {
     if (sharedTasks.length === 0) {
       return 0;
     }
-    return Math.round(
-      sharedTasks.reduce((sum, task) => sum + task.progress.percent_complete, 0) / sharedTasks.length,
-    );
+    return Math.round(sharedTasks.reduce((sum, task) => sum + task.progress.percent_complete, 0) / sharedTasks.length);
   }, [sharedTasks]);
 
   const setStatus = useCallback(
@@ -206,10 +282,16 @@ export function useSharedProgress() {
     [progressByTask, updateTask],
   );
 
+  const activeMap = sharedTasks.find((task) => task.progress.status !== 'done')?.map ?? sharedTasks[0]?.map ?? DEFAULT_MAP;
+  const mapTelemetry = mapTelemetryByMap[activeMap] ?? mapTelemetryByMap[DEFAULT_MAP] ?? mapTelemetrySeedRows[0];
+  const bossIntel = bossIntelByMap[activeMap] ?? bossIntelByMap[DEFAULT_MAP] ?? bossIntelSeedRows[0];
+
   return {
+    bossIntel,
     completion,
     error,
     loading,
+    mapTelemetry,
     refresh,
     run,
     schemaSql,

@@ -29,8 +29,8 @@
 These sections are currently presentation-layer only and are **not** backed by dedicated database tables or live game feeds:
 
 - Top nav tabs now sync to hash-based deep links so each dashboard view can be opened directly in the browser.
-- Map telemetry cards are generated from a hardcoded `mapTelemetry` object in `src/components/dashboard/dashboardData.ts`.
-- Boss intel is generated from a hardcoded `bossIntelByMap` object in `src/components/dashboard/dashboardData.ts`.
+- Map telemetry cards now load from the `map_telemetry` table, with seeded fallback rows when Supabase is unavailable or empty.
+- Boss intel now loads from the `boss_intel` table, with seeded fallback rows when Supabase is unavailable or empty.
 - Gear recommendations are derived from task requirements via `toGearList()` in `src/components/dashboard/dashboardData.ts`.
 - `STORYLINE_PROGRESS` summaries are derived from the current loaded task/task-progress dataset in the client.
 - `QUEST_INFORMATION` detail cards are derived from the current loaded task/task-progress dataset in the client.
@@ -70,15 +70,17 @@ Potential next steps:
 - `runs`
 - `tasks`
 - `task_progress`
+- `map_telemetry`
+- `boss_intel`
 
 ### Current realtime usage
-- Realtime only listens to `task_progress` changes.
-- There is no realtime feed for `tasks`, boss intel, map telemetry, storyline summaries, or quest detail activity history.
+- Realtime listens to `task_progress`, `map_telemetry`, and `boss_intel`.
+- There is still no realtime feed for `tasks`, storyline summaries, or quest detail activity history.
 
 ### Data model gaps if we want the wireframe to be fully real
 If we want the dashboard to become fully data-driven, we likely need additional backend structures for some or all of the following:
-- boss intel / threat feed
-- map metadata / map assets
+- richer boss intel history / threat feed events
+- richer map metadata / map assets
 - gear recommendations or loot requirements
 - storyline summaries
 - richer task notes / event log / activity history
@@ -93,12 +95,13 @@ If we want the dashboard to become fully data-driven, we likely need additional 
 - Progress persistence
 - Realtime task progress sync
 - Manual refresh reload
+- Supabase-backed map telemetry and boss intel with seeded fallback rows
 - Dedicated conditional views for `PRIORITY_DEPLOYMENT`, `STORYLINE_PROGRESS`, and `QUEST_INFORMATION`
 
 ### Not actually live today
 - Full router-backed navigation beyond the top-level hash routes
-- Real boss intel feed
-- Real map data
+- Historical boss intel feed
+- Rich map data / assets
 - Real logistics feed
 - Real system log feed
 - Historical quest notes / activity log

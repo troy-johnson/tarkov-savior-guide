@@ -6,7 +6,7 @@ import { StorylineProgressView } from './components/views/StorylineProgressView'
 import { useSharedProgress } from './hooks/useSharedProgress';
 
 function App() {
-  const { completion, error, loading, refresh, run, selectRun, setStatus, sharedTasks, syncMode, updateTask } = useSharedProgress();
+  const { bossIntel, completion, error, loading, mapTelemetry, refresh, run, selectRun, setStatus, sharedTasks, syncMode, updateTask } = useSharedProgress();
   const [runInput, setRunInput] = useState(run.id);
   const [activeTab, setActiveTab] = useState<TabKey>(() => getTabFromHash(window.location.hash));
 
@@ -96,7 +96,9 @@ function App() {
       {activeTab === 'PRIORITY_DEPLOYMENT' ? (
         <PriorityDeploymentView
           activeTask={activeTask}
+          bossIntel={bossIntel}
           completion={completion}
+          mapTelemetry={mapTelemetry}
           refresh={refresh}
           run={run}
           setStatus={setStatus}

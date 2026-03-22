@@ -1,10 +1,12 @@
 import { TaskCard } from '../TaskCard';
-import { bossIntelByMap, mapTelemetry, statusLabel, toDirectiveSubtitle, toGearList } from '../dashboard/dashboardData';
-import type { RunRecord, SharedTaskView } from '../../types';
+import { statusLabel, toDirectiveSubtitle, toGearList } from '../dashboard/dashboardData';
+import type { BossIntelRecord, MapTelemetryRecord, RunRecord, SharedTaskView } from '../../types';
 
 interface PriorityDeploymentViewProps {
   activeTask?: SharedTaskView;
+  bossIntel: BossIntelRecord;
   completion: number;
+  mapTelemetry: MapTelemetryRecord;
   refresh: () => Promise<void>;
   run: RunRecord;
   setStatus: (taskId: string, status: SharedTaskView['progress']['status']) => Promise<void>;
@@ -13,15 +15,25 @@ interface PriorityDeploymentViewProps {
   updateTask: (taskId: string, changes: Partial<Pick<SharedTaskView['progress'], 'status' | 'percent_complete' | 'current_note'>>) => Promise<void>;
 }
 
-export function PriorityDeploymentView({ activeTask, completion, refresh, run, setStatus, sharedTasks, syncMode, updateTask }: PriorityDeploymentViewProps) {
-  const telemetry = mapTelemetry[activeTask?.map ?? 'Labs'] ?? mapTelemetry.Labs;
-  const bossIntel = bossIntelByMap[activeTask?.map ?? 'Labs'] ?? bossIntelByMap.Labs;
+export function PriorityDeploymentView({
+  activeTask,
+  bossIntel,
+  completion,
+  mapTelemetry,
+  refresh,
+  run,
+  setStatus,
+  sharedTasks,
+  syncMode,
+  updateTask,
+}: PriorityDeploymentViewProps) {
   const gearList = activeTask ? toGearList(activeTask) : [];
   const systemLogs = !activeTask
     ? ['[SYS_LOG]: awaiting_task_stream...']
     : [
         `[SYS_LOG]: map_stream_established...${activeTask.map.toLowerCase().replace(/\s+/g, '_')}`,
-        `[SYS_LOG]: obj_${activeTask.id.replace(/-/g, '_')}_loaded...`,
+        `[SYS_LOG]: telemetry_sync_${mapTelemetry.updated_at}`,
+        `[SYS_LOG]: boss_intel_sync_${bossIntel.updated_at}`,
         `[SYS_LOG]: sync_mode_${syncMode} // completion_${completion}%`,
       ];
 
@@ -63,7 +75,7 @@ export function PriorityDeploymentView({ activeTask, completion, refresh, run, s
 
         <aside className="right-rail">
           <article className="panel panel--map">
-            <p className="map-tag">◎ {telemetry.areaLabel}</p>
+            <p className="map-tag">◎ {mapTelemetry.area_label}</p>
             <div className="map-canvas">
               <div className="map-canvas__shape" />
               <button type="button" className="expand-button">↗ EXPAND MAP</button>
@@ -71,13 +83,13 @@ export function PriorityDeploymentView({ activeTask, completion, refresh, run, s
             <div className="map-meta">
               <div>
                 <p className="meta-label">COORDINATES</p>
-                <p>{telemetry.coordinates}</p>
+                <p>{mapTelemetry.coordinates}</p>
               </div>
-              <div className="map-status">● SIGNAL LATCHED</div>
+              <div className="map-status">● {mapTelemetry.signal_status}</div>
             </div>
             <div>
               <p className="meta-label">SECTOR</p>
-              <p>{telemetry.sector}</p>
+              <p>{mapTelemetry.sector}</p>
             </div>
           </article>
 
@@ -91,7 +103,7 @@ export function PriorityDeploymentView({ activeTask, completion, refresh, run, s
         <article className="panel panel--alert">
           <div className="alert-header">
             <span>▲ LIVE BOSS INTEL</span>
-            <span>PRIORITY: HIGH</span>
+            <span>PRIORITY: {bossIntel.priority}</span>
           </div>
           <div className="alert-card">
             <div>

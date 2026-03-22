@@ -27,6 +27,26 @@ export interface TaskProgressRecord {
   updated_at: string;
 }
 
+export interface MapTelemetryRecord {
+  map: string;
+  coordinates: string;
+  sector: string;
+  area_label: string;
+  signal_status: string;
+  updated_at: string;
+}
+
+export interface BossIntelRecord {
+  map: string;
+  name: string;
+  secondary: string;
+  threat: string;
+  spawn: string;
+  activity: string;
+  priority: string;
+  updated_at: string;
+}
+
 export interface SharedTaskView extends TaskDefinition {
   progress: TaskProgressRecord;
 }
