@@ -1,13 +1,12 @@
 # Tarkov Savior Guide
 
-A lightweight shared-run dashboard that loads data from Supabase without requiring sign-in.
+A lightweight shared-run dashboard that loads data from Supabase without requiring sign-in. 
 
 ## Shared-link / no-login model
 
 The app reads a shared run identifier directly from the URL and fetches the corresponding record from the `shared_runs` table using the Supabase anon key.
 
 Supported URL formats:
-
 - `/?share=<share-id>`
 - `/?run=<run-id>`
 - `/<share-id>`
@@ -47,3 +46,10 @@ The client expects a `shared_runs` table or view with these columns:
 - `squad_note` text
 - `squad_progress` text
 - `raid_data_refreshed_at` timestamptz
+
+## Setup
+
+1. Install dependencies with `npm install`.
+2. Copy `.env.example` to `.env` and fill in your Supabase project URL + anon key.
+3. Run `npm run dev`.
+
