@@ -131,6 +131,14 @@ textarea {
   font-weight: 700;
 }
 
+.brand-subtitle {
+  margin-top: 0.35rem;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .topbar__nav {
   display: flex;
   gap: 1rem;
@@ -714,6 +722,23 @@ textarea {
 .quest-info-card__description {
   margin: 1rem 0 1.25rem;
   color: var(--text-dim);
+}
+
+.quest-info-card__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.quest-info-card__controls label,
+.quest-info-card__note {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.quest-info-card__controls strong {
+  color: var(--accent);
 }
 
 .quest-info-card__grid {
