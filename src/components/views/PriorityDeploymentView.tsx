@@ -5,6 +5,7 @@ import type { BossIntelRecord, MapTelemetryRecord, RunRecord, StepStatus, StepVi
 interface PriorityDeploymentViewProps {
   activeMapBreakdown: Array<{ map: string; currentCount: number; potentialCount: number; setupCount: number }>;
   bossIntel: BossIntelRecord;
+  completion: number;
   loading: boolean;
   mapTelemetry: MapTelemetryRecord;
   nextNonRaidSteps: StepView[];
@@ -34,20 +35,12 @@ export function PriorityDeploymentView({
   selectedPriorityMap,
   setStatus,
   setSelectedPriorityMap,
-  syncMode,
   updateStep,
 }: PriorityDeploymentViewProps) {
   const leadStep = prioritySteps[0];
   const gearList = leadStep ? toRequiredGearList([leadStep]) : [];
   const selectedMapSummary = activeMapBreakdown.find(({ map }) => map === selectedPriorityMap);
   const projectedStackCount = selectedMapSummary?.potentialCount ?? prioritySteps.length;
-  const systemLogs = [
-    `[SYS_LOG]: priority_map_${priorityMap.toLowerCase().replace(/\s+/g, '_')}`,
-    `[SYS_LOG]: active_objectives_${prioritySteps.length}`,
-    `[SYS_LOG]: sync_mode_${syncMode} // completion_${completion}%`,
-    `[SYS_LOG]: support_steps_${nextNonRaidSteps.length}`,
-    `[SYS_LOG]: setup_chain_${prioritySetupSteps.length}`,
-  ];
 
   return (
     <>
