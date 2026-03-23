@@ -5,7 +5,6 @@ import type { BossIntelRecord, MapTelemetryRecord, RunRecord, StepStatus, StepVi
 interface PriorityDeploymentViewProps {
   activeMapBreakdown: Array<{ map: string; currentCount: number; potentialCount: number; setupCount: number }>;
   bossIntel: BossIntelRecord;
-  completion: number;
   loading: boolean;
   mapTelemetry: MapTelemetryRecord;
   nextNonRaidSteps: StepView[];
@@ -24,7 +23,6 @@ interface PriorityDeploymentViewProps {
 export function PriorityDeploymentView({
   activeMapBreakdown,
   bossIntel,
-  completion,
   loading,
   mapTelemetry,
   nextNonRaidSteps,
@@ -41,6 +39,8 @@ export function PriorityDeploymentView({
 }: PriorityDeploymentViewProps) {
   const leadStep = prioritySteps[0];
   const gearList = leadStep ? toRequiredGearList([leadStep]) : [];
+  const selectedMapSummary = activeMapBreakdown.find(({ map }) => map === selectedPriorityMap);
+  const projectedStackCount = selectedMapSummary?.potentialCount ?? prioritySteps.length;
   const systemLogs = [
     `[SYS_LOG]: priority_map_${priorityMap.toLowerCase().replace(/\s+/g, '_')}`,
     `[SYS_LOG]: active_objectives_${prioritySteps.length}`,
@@ -65,6 +65,10 @@ export function PriorityDeploymentView({
           {prioritySetupSteps.length > 0 ? (
             <div className="directive-setup">
               <p className="meta-label">STACK SETUP</p>
+              <p className="directive-setup__summary">
+                Complete these {prioritySetupSteps.length} step{prioritySetupSteps.length === 1 ? '' : 's'} to open up{' '}
+                {projectedStackCount} active step{projectedStackCount === 1 ? '' : 's'} on {priorityMap}.
+              </p>
               <div className="directive-setup__list">
                 {prioritySetupSteps.map((step) => (
                   <div key={step.id} className="directive-setup__item">
@@ -124,8 +128,21 @@ export function PriorityDeploymentView({
             </div>
           </article>
 
-          <article className="panel panel--logs">
-            {systemLogs.map((entry) => <p key={entry}>{entry}</p>)}
+          <article className="panel panel--support">
+            <p className="panel__eyebrow">OUT OF RAID SUPPORT</p>
+            <h2>NON-RAID STEPS</h2>
+            <div className="support-queue">
+              {nextNonRaidSteps.length === 0 ? (
+                <p className="empty-state">No trader, hideout, or wait-gated blockers are active right now.</p>
+              ) : (
+                nextNonRaidSteps.map((step) => (
+                  <div key={step.id} className="support-queue__item">
+                    <strong>{step.map}</strong>
+                    <span>{step.quest.title} · {step.title}</span>
+                  </div>
+                ))
+              )}
+            </div>
           </article>
         </aside>
 
