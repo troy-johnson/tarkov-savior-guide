@@ -169,6 +169,9 @@ export function useSharedProgress() {
       setError(null);
 
       if (!client) {
+        if (!active) {
+          return;
+        }
         hydrateDefaults(seedQuestSteps, run.id, readLocalProgress(run.id));
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);

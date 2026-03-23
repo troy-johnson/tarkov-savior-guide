@@ -49,6 +49,7 @@ function App() {
 
   const activeTabMeta = useMemo(() => tabMeta[activeTab], [activeTab]);
   const requiredSteps = storyQuests.reduce((sum, quest) => sum + quest.requiredSteps, 0);
+  const isSyncBusy = loading || refreshing;
 
   return (
     <main className="dashboard-shell">
@@ -70,16 +71,16 @@ function App() {
             </button>
           ))}
         </nav>
-        <button type="button" className="refresh-button" disabled={loading || refreshing} onClick={() => void refresh()}>
-          {loading || refreshing ? 'SYNCING…' : 'REFRESH SYNC'}
+        <button type="button" className="refresh-button" disabled={isSyncBusy} onClick={() => void refresh()}>
+          {isSyncBusy ? 'SYNCING…' : 'REFRESH SYNC'}
         </button>
       </header>
 
-      {(error || loading || refreshing) ? (
+      {(error || isSyncBusy) ? (
         <section className={`status-banner${error ? ' status-banner--error' : ''}`}>
           <div className="status-banner__content">
             <span>{error ? `Realtime sync fallback: ${error}` : refreshing ? 'Refreshing shared progress…' : 'Loading shared progress…'}</span>
-            {(loading || refreshing) ? (
+            {isSyncBusy ? (
               <div className="status-banner__progress" aria-label="Shared progress is loading" aria-live="polite">
                 <div className="status-banner__progress-track" aria-hidden="true">
                   <span className="status-banner__progress-fill" />
@@ -97,7 +98,7 @@ function App() {
           <span className="meta-label">SHARED RUN LINK / INVITE CODE</span>
           <div className="control-card__inline">
             <input value={runInput} onChange={(event) => setRunInput(event.target.value)} placeholder="shared-savior-run" />
-            <button type="button" disabled={loading} onClick={() => void selectRun(runInput)}>JOIN RUN</button>
+            <button type="button" disabled={isSyncBusy} onClick={() => void selectRun(runInput)}>JOIN RUN</button>
           </div>
         </label>
         <div className="control-card control-card--stats">
@@ -129,7 +130,7 @@ function App() {
           activeMapBreakdown={activeMapBreakdown}
           bossIntel={bossIntel}
           completion={completion}
-          loading={loading}
+          loading={isSyncBusy}
           mapTelemetry={mapTelemetry}
           nextNonRaidSteps={nextNonRaidSteps}
           priorityMap={priorityMap}
@@ -144,7 +145,7 @@ function App() {
 
       {activeTab === 'STORYLINE_PROGRESS' ? <StorylineProgressView storyQuests={storyQuests} /> : null}
       {activeTab === 'QUEST_INFORMATION' ? (
-        <QuestInformationView loading={loading} storyQuests={storyQuests} setStatus={setStatus} updateStep={updateStep} />
+        <QuestInformationView loading={isSyncBusy} storyQuests={storyQuests} setStatus={setStatus} updateStep={updateStep} />
       ) : null}
 
       <footer className="footer-bar">
