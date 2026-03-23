@@ -66,6 +66,13 @@ export function getSupabaseClient(): SupabaseClient<AppDatabase> | null {
   }
 
   if (!cachedClient) {
+    console.log('[shared-progress]', {
+      operation: 'supabase:create-client',
+      isSupabaseConfigured,
+      urlConfigured: Boolean(supabaseUrl),
+      anonKeyConfigured: Boolean(supabaseAnonKey),
+      error: null,
+    });
     cachedClient = createClient<AppDatabase>(supabaseUrl, supabaseAnonKey, {
       auth: {
         persistSession: false,

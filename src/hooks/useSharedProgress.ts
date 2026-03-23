@@ -127,6 +127,8 @@ export function useSharedProgress() {
   const [steps, setSteps] = useState<QuestStepDefinition[]>(seedQuestSteps);
   const [progressByStep, setProgressByStep] = useState<Record<string, StepProgressRecord>>({});
   const progressByStepRef = useRef<Record<string, StepProgressRecord>>({});
+  const runIdRef = useRef(run.id);
+  const syncModeRef = useRef<'supabase' | 'local-seed'>(isSupabaseConfigured ? 'supabase' : 'local-seed');
   const [mapTelemetryByMap, setMapTelemetryByMap] = useState<Record<string, MapTelemetryRecord>>(seedMapTelemetry);
   const [bossIntelByMap, setBossIntelByMap] = useState<Record<string, BossIntelRecord>>(seedBossIntelByMap);
   const [loading, setLoading] = useState(true);
@@ -135,6 +137,29 @@ export function useSharedProgress() {
   const [error, setError] = useState<string | null>(null);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
+
+  runIdRef.current = run.id;
+  syncModeRef.current = syncMode;
+
+  const logRemoteCheckpoint = useCallback((operation: string, details?: { error?: unknown; message?: string }) => {
+    console.log('[shared-progress]', {
+      runId: runIdRef.current,
+      isSupabaseConfigured,
+      syncMode: syncModeRef.current,
+      operation,
+      error: details?.error ?? details?.message ?? null,
+    });
+  }, []);
+
+  const logRemoteFailure = useCallback((operation: string, details?: { error?: unknown; message?: string }) => {
+    console.error('[shared-progress]', {
+      runId: runIdRef.current,
+      isSupabaseConfigured,
+      syncMode: syncModeRef.current,
+      operation,
+      error: details?.error ?? details?.message ?? null,
+    });
+  }, []);
 
   const hydrateDefaults = useCallback((stepList: QuestStepDefinition[], runId: string, rows: StepProgressRecord[] = []) => {
     const hydrated = Object.fromEntries(
@@ -150,27 +175,34 @@ export function useSharedProgress() {
 
   const ensureRemoteRun = useCallback(async () => {
     if (!client) {
+      logRemoteFailure('ensureRemoteRun:client-null', { message: 'Supabase client unavailable' });
       return;
     }
 
+    logRemoteCheckpoint('ensureRemoteRun:before');
     const { error: runError } = await client.from('runs').upsert({
       id: run.id,
       name: run.name,
     } as never, { onConflict: 'id' });
 
     if (runError) {
+      logRemoteFailure('ensureRemoteRun:error', { error: runError });
       throw runError;
     }
-  }, [client, run.id, run.name]);
+
+    logRemoteCheckpoint('ensureRemoteRun:after');
+  }, [client, logRemoteCheckpoint, logRemoteFailure, run.id, run.name]);
 
   useEffect(() => {
     let active = true;
 
     async function load() {
+      logRemoteCheckpoint('load:start');
       setLoading(true);
       setError(null);
 
       if (!client) {
+        logRemoteFailure('load:client-null', { message: 'Supabase client unavailable' });
         if (!active) {
           return;
         }
@@ -185,24 +217,50 @@ export function useSharedProgress() {
       }
 
       try {
+        logRemoteCheckpoint('load:read-story_quests:before');
+        const { data: questRows, error: questError } = await client.from('story_quests').select('*').order('sort_order', { ascending: true });
+        if (questError) {
+          logRemoteFailure('load:read-story_quests:error', { error: questError });
+          throw questError;
+        }
+        logRemoteCheckpoint('load:read-story_quests:after');
+
+        logRemoteCheckpoint('load:read-quest_steps:before');
+        const { data: stepRows, error: stepError } = await client.from('quest_steps').select('*').order('sort_order', { ascending: true });
+        if (stepError) {
+          logRemoteFailure('load:read-quest_steps:error', { error: stepError });
+          throw stepError;
+        }
+        logRemoteCheckpoint('load:read-quest_steps:after');
+
+        logRemoteCheckpoint('load:read-runs:before');
+        const { data: runRow, error: runError } = await client.from('runs').select('*').eq('id', run.id).maybeSingle();
+        if (runError) {
+          logRemoteFailure('load:read-runs:error', { error: runError });
+          throw runError;
+        }
+        logRemoteCheckpoint('load:read-runs:after');
+
+        logRemoteCheckpoint('load:read-step_progress:before');
+        const { data: progressRows, error: progressError } = await client.from('step_progress').select('*').eq('run_id', run.id);
+        if (progressError) {
+          logRemoteFailure('load:read-step_progress:error', { error: progressError });
+          throw progressError;
+        }
+        logRemoteCheckpoint('load:read-step_progress:after');
+
         const [
-          { data: questRows, error: questError },
-          { data: stepRows, error: stepError },
-          { data: runRow, error: runError },
-          { data: progressRows, error: progressError },
           { data: telemetryRows, error: telemetryError },
           { data: bossRows, error: bossError },
         ] = await Promise.all([
-          client.from('story_quests').select('*').order('sort_order', { ascending: true }),
-          client.from('quest_steps').select('*').order('sort_order', { ascending: true }),
-          client.from('runs').select('*').eq('id', run.id).maybeSingle(),
-          client.from('step_progress').select('*').eq('run_id', run.id),
           client.from('map_telemetry').select('*'),
           client.from('boss_intel').select('*'),
         ]);
 
-        if (questError || stepError || runError || progressError || telemetryError || bossError) {
-          throw questError ?? stepError ?? runError ?? progressError ?? telemetryError ?? bossError;
+        if (telemetryError || bossError) {
+          const remoteError = telemetryError ?? bossError;
+          logRemoteFailure('load:read-dashboard:error', { error: remoteError });
+          throw remoteError;
         }
 
         const resolvedQuests = (questRows ?? []).length > 0 ? questRows : seedStoryQuests;
@@ -250,6 +308,7 @@ export function useSharedProgress() {
         if (!active) {
           return;
         }
+        logRemoteFailure('load:local-seed-fallback', { error: loadError });
         setError(loadError instanceof Error ? loadError.message : 'Unable to load shared progress');
         setQuests(seedStoryQuests);
         setSteps(seedQuestSteps);
@@ -280,6 +339,7 @@ export function useSharedProgress() {
     const stepProgressChannel = client
       .channel(`step_progress:${run.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'step_progress', filter: `run_id=eq.${run.id}` }, (payload) => {
+        logRemoteCheckpoint('realtime:step_progress:event', { message: payload.eventType });
         const next = payload.new as StepProgressRecord;
         if (!next?.step_id) {
           return;
@@ -334,6 +394,7 @@ export function useSharedProgress() {
       writeLocalProgress(run.id, nextProgressByStep);
 
       if (!client) {
+        logRemoteFailure('updateStep:client-null', { message: 'Supabase client unavailable' });
         return;
       }
 
@@ -341,11 +402,13 @@ export function useSharedProgress() {
       try {
         await ensureRemoteRun();
       } catch (runError) {
+        logRemoteFailure('updateStep:ensureRemoteRun:local-seed-fallback', { error: runError });
         setSyncMode('local-seed');
         setError(runError instanceof Error ? runError.message : 'Unable to prepare run for sync');
         return;
       }
 
+      logRemoteCheckpoint('updateStep:upsert-step_progress:before');
       const { data: savedProgress, error: upsertError } = await client
         .from('step_progress')
         .upsert(next as never, { onConflict: 'run_id,step_id' })
@@ -353,10 +416,13 @@ export function useSharedProgress() {
         .single();
 
       if (upsertError) {
+        logRemoteFailure('updateStep:upsert-step_progress:local-seed-fallback', { error: upsertError });
         setSyncMode('local-seed');
         setError(upsertError.message);
         return;
       }
+
+      logRemoteCheckpoint('updateStep:upsert-step_progress:after');
 
       if (savedProgress) {
         const savedProgressByStep = { ...nextProgressByStep, [stepId]: savedProgress };
