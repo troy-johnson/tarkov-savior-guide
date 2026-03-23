@@ -13,6 +13,17 @@ import type {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log('[shared-progress]', {
+  operation: 'supabase:env',
+  mode: import.meta.env.MODE,
+  dev: import.meta.env.DEV,
+  prod: import.meta.env.PROD,
+  viteSupabaseUrl: supabaseUrl ?? null,
+  viteSupabaseAnonKeyPreview: supabaseAnonKey ? `${supabaseAnonKey.slice(0, 8)}…` : null,
+  viteSupabaseAnonKeyLength: supabaseAnonKey?.length ?? 0,
+  allViteEnvKeys: Object.keys(import.meta.env).sort(),
+});
+
 export type AppDatabase = {
   public: {
     Tables: {
