@@ -149,6 +149,8 @@ export function useSharedProgress() {
   }, []);
 
   const ensureRemoteRun = useCallback(async () => {
+    // `runs` is only the parent identity/metadata record for a shared run.
+    // Canonical per-step checklist state lives in `step_progress`.
     if (!client) {
       return;
     }
@@ -324,6 +326,8 @@ export function useSharedProgress() {
 
   const updateStep = useCallback(
     async (stepId: string, changes: Partial<Pick<StepProgressRecord, 'status' | 'current_note'>>) => {
+      // Persist checklist state by `(run_id, step_id)` in `step_progress`.
+      // localStorage is only a client-side fallback/cache for the same rows.
       const currentProgressByStep = progressByStepRef.current;
       const current = currentProgressByStep[stepId] ?? createDefaultProgress(run.id, stepId);
       const next = { ...current, ...changes, updated_at: new Date().toISOString() };

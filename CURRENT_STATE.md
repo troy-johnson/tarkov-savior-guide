@@ -5,10 +5,10 @@
 ### Shared data flow
 - The app loads storyline definitions from Supabase `story_quests` and `quest_steps` when available.
 - If those remote tables are empty or Supabase is unavailable, the UI falls back to local seeded quest data.
-- The current run is loaded from `runs` by `run.id`.
-- Step progress is loaded from `step_progress` for the active run.
-- Progress updates are written back to `step_progress` with `upsert`.
-- The app now also snapshots per-run progress into localStorage so raid status and notes still save during local fallback or failed Supabase writes.
+- The current run is loaded from `runs` by `run.id`, and `runs` is limited to run identity/metadata.
+- Canonical checked-off step state is loaded from `step_progress` for the active run, with one row per `(run_id, step_id)`.
+- Progress updates are written back to `step_progress` with `upsert`, keeping `status`, `current_note`, and `updated_at` on that table.
+- localStorage is only a client-side fallback/cache so raid status and notes still survive local fallback or failed Supabase writes.
 - Realtime subscription is set up for `step_progress` changes on the current run.
 - A manual refresh trigger exists and forces the load effect to run again.
 - Progress controls should stay disabled while the Supabase bootstrap pass is still creating or seeding the backing records for the active run.
@@ -20,7 +20,7 @@
 - Marking an objective complete in the directive list updates the underlying task progress.
 - Changing status in a task card or quest detail card updates the underlying task progress.
 - Moving the completion slider in either dashboard editing surface updates the underlying task progress.
-- Editing the field note in either editing surface updates the underlying task progress, sets status to `in_progress`, and persists the change in the current run snapshot even without Supabase.
+- Editing the field note in either editing surface updates the underlying task progress, sets status to `in_progress`, and persists the change in the per-step fallback cache even without Supabase.
 - Completion percentage in the dashboard is derived from the live task progress values.
 - Switching tabs changes the rendered dashboard view for `PRIORITY_DEPLOYMENT`, `STORYLINE_PROGRESS`, and `QUEST_INFORMATION`.
 
@@ -71,10 +71,10 @@ Potential next steps:
 ## Backend status
 
 ### Current tables in use
-- `runs`
+- `runs` (run identity/metadata only)
 - `story_quests`
 - `quest_steps`
-- `step_progress`
+- `step_progress` (canonical checklist state)
 - `map_telemetry`
 - `boss_intel`
 
@@ -97,7 +97,7 @@ If we want the dashboard to become fully data-driven, we likely need additional 
 - Shared run selection
 - Shared task progress loading
 - Shared task progress editing
-- Progress persistence through Supabase when available, with local per-run fallback snapshots for raid progress and notes
+- Progress persistence through Supabase when available, with localStorage acting only as a per-run fallback/cache for raid progress and notes
 - Realtime task progress sync
 - Manual refresh reload
 - Supabase-backed map telemetry and boss intel with seeded fallback rows
