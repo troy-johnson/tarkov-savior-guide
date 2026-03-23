@@ -120,6 +120,40 @@ export function toGearList(step: StepView) {
   return gear.slice(0, 3);
 }
 
+export function toRequiredGearList(steps: StepView[]) {
+  const normalized = new Map<string, { label: string; quantity: string; accent: 'amber' | 'sage' }>();
+
+  for (const step of steps) {
+    for (const item of step.required_items) {
+      const label = item.trim();
+      if (!label) {
+        continue;
+      }
+
+      const key = label.toLowerCase();
+      if (!normalized.has(key)) {
+        normalized.set(key, { label, quantity: 'REQ.', accent: 'sage' });
+      }
+    }
+  }
+
+  if (normalized.size > 0) {
+    return [...normalized.values()].slice(0, 6);
+  }
+
+  const fallback = new Map<string, { label: string; quantity: string; accent: 'amber' | 'sage' }>();
+  for (const step of steps) {
+    for (const item of toGearList(step)) {
+      const key = item.label.toLowerCase();
+      if (!fallback.has(key)) {
+        fallback.set(key, item);
+      }
+    }
+  }
+
+  return [...fallback.values()].slice(0, 6);
+}
+
 export function toQuestCompletion(quest: StoryQuestView) {
   return quest.requiredSteps === 0 ? 0 : Math.round((quest.completedSteps / quest.requiredSteps) * 100);
 }

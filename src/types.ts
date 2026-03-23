@@ -19,6 +19,10 @@ export interface QuestStepDefinition {
   step_type: StepType;
   map: string;
   is_required: boolean;
+  time_gate: string;
+  required_items: string[];
+  items_to_obtain: string[];
+  notes: string;
 }
 
 export interface RunRecord {

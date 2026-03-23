@@ -95,6 +95,10 @@ const step = (
   map,
   step_type,
   is_required,
+  time_gate: '',
+  required_items: [],
+  items_to_obtain: [],
+  notes: '',
 });
 
 export const seedQuestSteps: QuestStepDefinition[] = [

@@ -115,7 +115,7 @@ on conflict (id) do update set
 const questStepSeedSql = seedQuestSteps
   .map(
     (step) => `
-insert into public.quest_steps (id, quest_id, sort_order, title, details, step_type, map, is_required)
+insert into public.quest_steps (id, quest_id, sort_order, title, details, step_type, map, is_required, time_gate, required_items, items_to_obtain, notes)
 values (
   '${escapeSqlString(step.id)}',
   '${escapeSqlString(step.quest_id)}',
@@ -124,7 +124,11 @@ values (
   '${escapeSqlString(step.details)}',
   '${escapeSqlString(step.step_type)}',
   '${escapeSqlString(step.map)}',
-  ${step.is_required}
+  ${step.is_required},
+  '${escapeSqlString(step.time_gate)}',
+  '${escapeSqlString(JSON.stringify(step.required_items))}'::jsonb,
+  '${escapeSqlString(JSON.stringify(step.items_to_obtain))}'::jsonb,
+  '${escapeSqlString(step.notes)}'
 )
 on conflict (id) do update set
   quest_id = excluded.quest_id,
@@ -133,9 +137,60 @@ on conflict (id) do update set
   details = excluded.details,
   step_type = excluded.step_type,
   map = excluded.map,
-  is_required = excluded.is_required;`,
+  is_required = excluded.is_required,
+  time_gate = excluded.time_gate,
+  required_items = excluded.required_items,
+  items_to_obtain = excluded.items_to_obtain,
+  notes = excluded.notes;`,
   )
   .join('\n');
+
+export const storylineQuestSpreadsheetSyncSql = `
+with incoming_steps as (
+  select *
+  from jsonb_to_recordset($$[
+    {
+      "quest_id": "replace-with-quest-id",
+      "title": "replace-with-step-title",
+      "sort_order": 1,
+      "details": "Step summary copied from the spreadsheet step text",
+      "step_type": "raid",
+      "map": "Woods",
+      "is_required": true,
+      "time_gate": "",
+      "required_items": [],
+      "items_to_obtain": [],
+      "notes": ""
+    }
+  ]$$::jsonb) as rows(
+    quest_id text,
+    title text,
+    sort_order integer,
+    details text,
+    step_type text,
+    map text,
+    is_required boolean,
+    time_gate text,
+    required_items jsonb,
+    items_to_obtain jsonb,
+    notes text
+  )
+)
+update public.quest_steps as target
+set
+  sort_order = incoming.sort_order,
+  details = incoming.details,
+  step_type = incoming.step_type,
+  map = incoming.map,
+  is_required = incoming.is_required,
+  time_gate = incoming.time_gate,
+  required_items = coalesce(incoming.required_items, '[]'::jsonb),
+  items_to_obtain = coalesce(incoming.items_to_obtain, '[]'::jsonb),
+  notes = incoming.notes
+from incoming_steps as incoming
+where target.quest_id = incoming.quest_id
+  and lower(target.title) = lower(incoming.title);
+`;
 
 const mapTelemetrySeedSql = Object.values(seedMapTelemetry)
   .map(
@@ -210,8 +265,17 @@ create table if not exists public.quest_steps (
   details text not null,
   step_type text not null,
   map text not null,
-  is_required boolean not null default true
+  is_required boolean not null default true,
+  time_gate text not null default '',
+  required_items jsonb not null default '[]'::jsonb,
+  items_to_obtain jsonb not null default '[]'::jsonb,
+  notes text not null default ''
 );
+
+alter table public.quest_steps add column if not exists time_gate text not null default '';
+alter table public.quest_steps add column if not exists required_items jsonb not null default '[]'::jsonb;
+alter table public.quest_steps add column if not exists items_to_obtain jsonb not null default '[]'::jsonb;
+alter table public.quest_steps add column if not exists notes text not null default '';
 
 create table if not exists public.step_progress (
   run_id text not null references public.runs(id) on delete cascade,
