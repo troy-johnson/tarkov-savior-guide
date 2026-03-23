@@ -1,99 +1,80 @@
-import type { SharedTaskView, TaskStatus } from '../../types';
-import { statusLabel } from '../dashboard/dashboardData';
+import type { StepStatus, StepView, StoryQuestView } from '../../types';
+import { statusLabel, stepTypeLabel } from '../dashboard/dashboardData';
 
 interface QuestInformationViewProps {
-  setStatus: (taskId: string, status: TaskStatus) => Promise<void>;
-  sharedTasks: SharedTaskView[];
-  updateTask: (taskId: string, changes: Partial<Pick<SharedTaskView['progress'], 'status' | 'percent_complete' | 'current_note'>>) => Promise<void>;
+  setStatus: (stepId: string, status: StepStatus) => Promise<void>;
+  storyQuests: StoryQuestView[];
+  updateStep: (stepId: string, changes: Partial<Pick<StepView['progress'], 'status' | 'current_note'>>) => Promise<void>;
 }
 
-const statusOrder: TaskStatus[] = ['blocked', 'in_progress', 'not_started', 'done'];
-const statusOptions: TaskStatus[] = ['not_started', 'in_progress', 'blocked', 'done'];
+const statusOptions: StepStatus[] = ['not_started', 'in_progress', 'blocked', 'done'];
 
-export function QuestInformationView({ setStatus, sharedTasks, updateTask }: QuestInformationViewProps) {
-  const sortedTasks = [...sharedTasks].sort((left, right) => {
-    const statusDelta = statusOrder.indexOf(left.progress.status) - statusOrder.indexOf(right.progress.status);
-    if (statusDelta !== 0) {
-      return statusDelta;
-    }
-    return left.sort_order - right.sort_order;
-  });
-
+export function QuestInformationView({ setStatus, storyQuests, updateStep }: QuestInformationViewProps) {
   return (
     <section className="details-section details-section--standalone">
       <div className="section-heading">
         <h2>QUEST INFORMATION</h2>
-        <p>{sharedTasks.length} detailed task records</p>
+        <p>{storyQuests.length} storyline quest records</p>
       </div>
 
-      <div className="quest-info-list">
-        {sortedTasks.map((task) => (
-          <article key={task.id} className="panel quest-info-card">
-            <div className="quest-info-card__header">
+      <div className="quest-group-list">
+        {storyQuests.map((quest) => (
+          <article key={quest.id} className="panel quest-group-card">
+            <div className="quest-group-card__header">
               <div>
-                <p className="task-card__eyebrow">{task.storyline} // {task.map}</p>
-                <h3>{task.sort_order}. {task.title}</h3>
+                <p className="task-card__eyebrow">{quest.storyline} // QUEST {quest.sort_order}</p>
+                <h3>{quest.title}</h3>
               </div>
-              <div className={`status-chip status-chip--${task.progress.status}`}>
-                {statusLabel[task.progress.status]}
+              <div className={`status-chip status-chip--${quest.isComplete ? 'done' : quest.activeSteps.length > 0 ? 'in_progress' : 'not_started'}`}>
+                {quest.isComplete ? 'Complete' : `${quest.activeSteps.length} Active`}
               </div>
             </div>
-
-            <p className="quest-info-card__description">{task.description}</p>
-
-            <div className="quest-info-card__controls">
-              <label>
-                <span className="meta-label">Task State</span>
-                <select value={task.progress.status} onChange={(event) => void setStatus(task.id, event.target.value as TaskStatus)}>
-                  {statusOptions.map((status) => (
-                    <option key={status} value={status}>
-                      {statusLabel[status]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                <span className="meta-label">Completion</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="5"
-                  value={task.progress.percent_complete}
-                  onChange={(event) => void updateTask(task.id, { percent_complete: Number(event.target.value) })}
-                />
-                <strong>{task.progress.percent_complete}%</strong>
-              </label>
+            <p className="quest-info-card__description">{quest.summary}</p>
+            <div className="source-list">
+              {quest.source_urls.map((url) => (
+                <a key={url} href={url} target="_blank" rel="noreferrer">{url}</a>
+              ))}
             </div>
 
-            <div className="quest-info-card__grid">
-              <div>
-                <p className="meta-label">Evidence</p>
-                <p>{task.major_evidence}</p>
-              </div>
-              <div>
-                <p className="meta-label">Requirements</p>
-                <p>{task.requirements.join(', ')}</p>
-              </div>
-              <div>
-                <p className="meta-label">Dependencies</p>
-                <p>{task.dependencies_json.length > 0 ? task.dependencies_json.join(', ') : 'None'}</p>
-              </div>
-              <label className="quest-info-card__note">
-                <span className="meta-label">Field Note</span>
-                <textarea
-                  rows={3}
-                  value={task.progress.current_note}
-                  onChange={(event) => void updateTask(task.id, { current_note: event.target.value, status: 'in_progress' })}
-                  placeholder="Log the current state of this objective..."
-                />
-              </label>
-            </div>
-
-            <div className="quest-info-card__footer">
-              <span>Completion: {task.progress.percent_complete}%</span>
-              <span>Updated {new Date(task.progress.updated_at).toLocaleString()}</span>
+            <div className="quest-step-list">
+              {quest.steps.map((step) => (
+                <div key={step.id} className={`quest-step-row${step.isActive ? ' is-active' : ''}`}>
+                  <div className="quest-step-row__title">
+                    <button
+                      type="button"
+                      className={`objective-checkbox status-${step.progress.status}`}
+                      onClick={() => void setStatus(step.id, step.progress.status === 'done' ? 'not_started' : 'done')}
+                      aria-label={`Mark ${step.title} ${step.progress.status === 'done' ? 'not complete' : 'complete'}`}
+                    >
+                      {step.progress.status === 'done' ? '✓' : ''}
+                    </button>
+                    <div>
+                      <strong>{step.sort_order}. {step.title}</strong>
+                      <p>{step.map} · {stepTypeLabel[step.step_type]}{step.isActive ? ' · Active now' : ''}</p>
+                    </div>
+                  </div>
+                  <p>{step.details}</p>
+                  <div className="quest-step-row__controls">
+                    <label>
+                      <span className="meta-label">Step State</span>
+                      <select value={step.progress.status} onChange={(event) => void setStatus(step.id, event.target.value as StepStatus)}>
+                        {statusOptions.map((status) => (
+                          <option key={status} value={status}>{statusLabel[status]}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="quest-info-card__note">
+                      <span className="meta-label">Field Note</span>
+                      <textarea
+                        rows={2}
+                        value={step.progress.current_note}
+                        onChange={(event) => void updateStep(step.id, { current_note: event.target.value, status: 'in_progress' })}
+                        placeholder="Log the current state of this step..."
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
             </div>
           </article>
         ))}

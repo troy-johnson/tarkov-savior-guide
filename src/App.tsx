@@ -1,30 +1,41 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getTabFromHash, tabs, tabMeta, type TabKey } from './components/dashboard/dashboardData';
+import { getTabFromHash, tabs, tabMeta } from './components/dashboard/dashboardData';
 import { PriorityDeploymentView } from './components/views/PriorityDeploymentView';
 import { QuestInformationView } from './components/views/QuestInformationView';
 import { StorylineProgressView } from './components/views/StorylineProgressView';
 import { useSharedProgress } from './hooks/useSharedProgress';
 
 function App() {
-  const { bossIntel, completion, error, loading, mapTelemetry, refresh, run, selectRun, setStatus, sharedTasks, syncMode, updateTask } = useSharedProgress();
+  const {
+    activeMapBreakdown,
+    bossIntel,
+    completion,
+    error,
+    loading,
+    mapTelemetry,
+    nextNonRaidSteps,
+    priorityMap,
+    prioritySteps,
+    refresh,
+    run,
+    selectRun,
+    setStatus,
+    storyQuests,
+    syncMode,
+    updateStep,
+  } = useSharedProgress();
   const [runInput, setRunInput] = useState(run.id);
-  const [activeTab, setActiveTab] = useState<TabKey>(() => getTabFromHash(window.location.hash));
+  const [activeTab, setActiveTab] = useState(() => getTabFromHash(window.location.hash));
 
   useEffect(() => {
     setRunInput(run.id);
   }, [run.id]);
 
   useEffect(() => {
-    const syncTabFromLocation = () => {
-      setActiveTab(getTabFromHash(window.location.hash));
-    };
-
+    const syncTabFromLocation = () => setActiveTab(getTabFromHash(window.location.hash));
     syncTabFromLocation();
     window.addEventListener('hashchange', syncTabFromLocation);
-
-    return () => {
-      window.removeEventListener('hashchange', syncTabFromLocation);
-    };
+    return () => window.removeEventListener('hashchange', syncTabFromLocation);
   }, []);
 
   useEffect(() => {
@@ -34,8 +45,8 @@ function App() {
     }
   }, [activeTab]);
 
-  const activeTask = sharedTasks.find((task) => task.progress.status !== 'done') ?? sharedTasks[0];
   const activeTabMeta = useMemo(() => tabMeta[activeTab], [activeTab]);
+  const requiredSteps = storyQuests.reduce((sum, quest) => sum + quest.requiredSteps, 0);
 
   return (
     <main className="dashboard-shell">
@@ -83,34 +94,40 @@ function App() {
             <strong>{syncMode.toUpperCase()}</strong>
           </div>
           <div>
-            <span className="meta-label">AVERAGE COMPLETION</span>
+            <span className="meta-label">STEP COMPLETION</span>
             <strong>{completion}%</strong>
           </div>
           <div>
-            <span className="meta-label">DIRECT LINK</span>
-            <strong>{activeTabMeta.hash}</strong>
+            <span className="meta-label">PRIORITY MAP</span>
+            <strong>{priorityMap}</strong>
+          </div>
+          <div>
+            <span className="meta-label">TRACKED STEPS</span>
+            <strong>{requiredSteps}</strong>
           </div>
         </div>
       </section>
 
       {activeTab === 'PRIORITY_DEPLOYMENT' ? (
         <PriorityDeploymentView
-          activeTask={activeTask}
+          activeMapBreakdown={activeMapBreakdown}
           bossIntel={bossIntel}
           completion={completion}
           mapTelemetry={mapTelemetry}
+          nextNonRaidSteps={nextNonRaidSteps}
+          priorityMap={priorityMap}
+          prioritySteps={prioritySteps}
           refresh={refresh}
           run={run}
           setStatus={setStatus}
-          sharedTasks={sharedTasks}
           syncMode={syncMode}
-          updateTask={updateTask}
+          updateStep={updateStep}
         />
       ) : null}
 
-      {activeTab === 'STORYLINE_PROGRESS' ? <StorylineProgressView sharedTasks={sharedTasks} /> : null}
+      {activeTab === 'STORYLINE_PROGRESS' ? <StorylineProgressView storyQuests={storyQuests} /> : null}
       {activeTab === 'QUEST_INFORMATION' ? (
-        <QuestInformationView sharedTasks={sharedTasks} setStatus={setStatus} updateTask={updateTask} />
+        <QuestInformationView storyQuests={storyQuests} setStatus={setStatus} updateStep={updateStep} />
       ) : null}
 
       <footer className="footer-bar">

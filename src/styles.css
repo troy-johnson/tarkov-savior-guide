@@ -779,3 +779,302 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+.control-strip {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 1fr);
+  gap: 1rem;
+}
+
+.control-card {
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1rem;
+}
+
+.control-card__inline,
+.control-card--stats {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.control-card--stats {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.right-rail {
+  display: grid;
+  gap: 1.8rem;
+}
+
+.objective-list {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.objective-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.objective-checkbox {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent);
+  background: transparent;
+}
+
+.objective-checkbox.status-done {
+  background: rgba(255, 184, 77, 0.12);
+}
+
+.objective-item.is-done p {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+
+.map-canvas {
+  position: relative;
+  min-height: 390px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(255, 184, 77, 0.06), transparent 55%),
+    #181516;
+  background-size: 64px 64px, 64px 64px, auto, auto;
+}
+
+.map-canvas__shape {
+  position: absolute;
+  inset: 18% 14% 22% 16%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.28));
+  clip-path: polygon(10% 76%, 37% 18%, 81% 32%, 90% 61%, 57% 82%, 28% 72%);
+  opacity: 0.65;
+}
+
+.expand-button {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+}
+
+.map-meta,
+.intel-row,
+.alert-card,
+.storyline-card__header,
+.metric-row,
+.quest-group-card__header,
+.quest-step-row__title,
+.quest-step-row__controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.alert-card,
+.metric-row,
+.support-queue__item,
+.quest-step-row {
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.18);
+}
+
+.alert-pill,
+.status-chip {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+}
+
+.gear-list,
+.storyline-grid,
+.analysis-grid,
+.task-grid,
+.quest-group-list,
+.quest-step-list,
+.source-list,
+.support-queue {
+  display: grid;
+  gap: 1rem;
+}
+
+.gear-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  background: #161314;
+}
+
+.gear-item--sage {
+  border-left-color: var(--sage);
+}
+
+.details-section,
+.details-section--standalone {
+  margin-top: 2rem;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.section-heading--compact {
+  margin-bottom: 1rem;
+}
+
+.task-grid,
+.storyline-grid,
+.quest-group-list {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.task-card {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 1rem;
+}
+
+.task-card--active {
+  border-color: rgba(255, 184, 77, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 184, 77, 0.18) inset;
+}
+
+.task-card__header,
+.task-card__meta,
+.quest-step-row,
+.quest-info-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.task-card__meta {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.task-card__description,
+.quest-info-card__description,
+.source-list a,
+.quest-step-row p,
+.support-queue__item span {
+  color: var(--text-dim);
+}
+
+.progress-bar {
+  margin: 1rem 0;
+  height: 10px;
+  background: rgba(255,255,255,0.06);
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ffe2ae);
+}
+
+.storyline-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.metric-row {
+  align-items: center;
+}
+
+.dependency-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.quest-group-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.source-list a {
+  word-break: break-all;
+}
+
+.quest-step-row.is-active {
+  border-color: rgba(255, 184, 77, 0.4);
+}
+
+.quest-step-row__controls {
+  align-items: start;
+}
+
+.quest-step-row__controls label {
+  flex: 1;
+}
+
+.empty-state {
+  color: var(--text-faint);
+}
+
+.panel--logs p + p {
+  margin-top: 0.45rem;
+}
+
+.footer-bar {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  color: var(--text-dim);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+@media (max-width: 1100px) {
+  .command-grid,
+  .control-strip,
+  .analysis-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'directive'
+      'map'
+      'support';
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-shell {
+    padding: 1rem;
+  }
+
+  .task-card__meta,
+  .storyline-stats,
+  .quest-step-row__controls,
+  .map-meta,
+  .intel-row,
+  .alert-card,
+  .section-heading,
+  .quest-group-card__header {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}
