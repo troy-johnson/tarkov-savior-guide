@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: env vars
+        run: env
+
       - name: Log Supabase build env diagnostics
         shell: bash
         run: |
