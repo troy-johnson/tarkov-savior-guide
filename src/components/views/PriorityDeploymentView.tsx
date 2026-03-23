@@ -3,17 +3,20 @@ import { statusLabel, toDirectiveSubtitle, toRequiredGearList } from '../dashboa
 import type { BossIntelRecord, MapTelemetryRecord, RunRecord, StepStatus, StepView } from '../../types';
 
 interface PriorityDeploymentViewProps {
-  activeMapBreakdown: Array<[string, number]>;
+  activeMapBreakdown: Array<{ map: string; currentCount: number; potentialCount: number; setupCount: number }>;
   bossIntel: BossIntelRecord;
   completion: number;
   loading: boolean;
   mapTelemetry: MapTelemetryRecord;
   nextNonRaidSteps: StepView[];
   priorityMap: string;
+  prioritySetupSteps: StepView[];
   prioritySteps: StepView[];
   refresh: () => Promise<void>;
   run: RunRecord;
+  selectedPriorityMap: string;
   setStatus: (stepId: string, status: StepStatus) => Promise<void>;
+  setSelectedPriorityMap: (map: string) => void;
   syncMode: 'supabase' | 'local-seed';
   updateStep: (stepId: string, changes: Partial<Pick<StepView['progress'], 'status' | 'current_note'>>) => Promise<void>;
 }
@@ -26,20 +29,24 @@ export function PriorityDeploymentView({
   mapTelemetry,
   nextNonRaidSteps,
   priorityMap,
+  prioritySetupSteps,
   prioritySteps,
   refresh,
   run,
+  selectedPriorityMap,
   setStatus,
+  setSelectedPriorityMap,
   syncMode,
   updateStep,
 }: PriorityDeploymentViewProps) {
   const leadStep = prioritySteps[0];
-  const gearList = toRequiredGearList(prioritySteps);
+  const gearList = leadStep ? toRequiredGearList([leadStep]) : [];
   const systemLogs = [
     `[SYS_LOG]: priority_map_${priorityMap.toLowerCase().replace(/\s+/g, '_')}`,
     `[SYS_LOG]: active_objectives_${prioritySteps.length}`,
     `[SYS_LOG]: sync_mode_${syncMode} // completion_${completion}%`,
     `[SYS_LOG]: support_steps_${nextNonRaidSteps.length}`,
+    `[SYS_LOG]: setup_chain_${prioritySetupSteps.length}`,
   ];
 
   return (
@@ -55,28 +62,46 @@ export function PriorityDeploymentView({
             <div className="directive-id">ID: {leadStep ? `SV-${String(leadStep.sort_order).padStart(4, '0')}` : 'SV-0000'}</div>
           </div>
 
-          <ul className="objective-list">
-            {prioritySteps.map((step) => {
-              const checked = step.progress.status === 'done';
-              return (
-                <li key={step.id} className={`objective-item${checked ? ' is-done' : ''}`}>
-                  <button
-                    type="button"
-                    className={`objective-checkbox status-${step.progress.status}`}
-                    disabled={loading}
-                    onClick={() => void setStatus(step.id, checked ? 'not_started' : 'done')}
-                    aria-label={`Mark ${step.title} ${checked ? 'not complete' : 'complete'}`}
-                  >
-                    {checked ? '✓' : ''}
-                  </button>
-                  <div>
-                    <p>{step.title}</p>
-                    <span>{step.quest.title} · {statusLabel[step.progress.status]}</span>
+          {prioritySetupSteps.length > 0 ? (
+            <div className="directive-setup">
+              <p className="meta-label">STACK SETUP</p>
+              <div className="directive-setup__list">
+                {prioritySetupSteps.map((step) => (
+                  <div key={step.id} className="directive-setup__item">
+                    <strong>{step.map}</strong>
+                    <span>{step.quest.title} · {step.title}</span>
                   </div>
-                </li>
-              );
-            })}
-          </ul>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {prioritySteps.length === 0 ? (
+            <p className="empty-state">No raid steps are live on this map yet. Clear the setup chain to stack this deployment.</p>
+          ) : (
+            <ul className="objective-list">
+              {prioritySteps.map((step) => {
+                const checked = step.progress.status === 'done';
+                return (
+                  <li key={step.id} className={`objective-item${checked ? ' is-done' : ''}`}>
+                    <button
+                      type="button"
+                      className={`objective-checkbox status-${step.progress.status}`}
+                      disabled={loading}
+                      onClick={() => void setStatus(step.id, checked ? 'not_started' : 'done')}
+                      aria-label={`Mark ${step.title} ${checked ? 'not complete' : 'complete'}`}
+                    >
+                      {checked ? '✓' : ''}
+                    </button>
+                    <div>
+                      <p>{step.title}</p>
+                      <span>{step.quest.title} · {statusLabel[step.progress.status]}</span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </article>
 
         <aside className="right-rail">
@@ -134,7 +159,9 @@ export function PriorityDeploymentView({
           <p className="panel__eyebrow">FIELD LOGISTICS</p>
           <h2>REQUIRED GEAR</h2>
           <div className="gear-list">
-            {gearList.map((item) => (
+            {gearList.length === 0 ? (
+              <p className="empty-state">No special gear is required for the current directive.</p>
+            ) : gearList.map((item) => (
               <div key={item.label} className={`gear-item gear-item--${item.accent}`}>
                 <span>{item.label.toUpperCase()}</span>
                 <strong>{item.quantity}</strong>
@@ -142,7 +169,7 @@ export function PriorityDeploymentView({
             ))}
           </div>
           <div className="support-queue">
-            <p className="meta-label">OUT OF RAID SUPPORT</p>
+            <p className="meta-label">NON-RAID STEPS</p>
             {nextNonRaidSteps.length === 0 ? (
               <p className="empty-state">No trader, hideout, or wait-gated blockers are active right now.</p>
             ) : (
@@ -160,23 +187,31 @@ export function PriorityDeploymentView({
       <section className="details-section">
         <div className="section-heading">
           <h2>PRIORITY DEPLOYMENT</h2>
-          <p>{prioritySteps.length} active steps on {priorityMap}</p>
+          <p>{prioritySteps.length} active steps available on {priorityMap}</p>
         </div>
         <div className="priority-summary-grid">
           <article className="panel analysis-panel">
             <div className="section-heading section-heading--compact">
               <h2>MAP STACK RANKING</h2>
-              <p>Active raid steps by map</p>
+              <p>Projected raid stack after clearing current blockers</p>
             </div>
             <div className="map-breakdown-list">
-              {activeMapBreakdown.map(([map, count]) => (
-                <div key={map} className="metric-row">
+              {activeMapBreakdown.map(({ map, currentCount, potentialCount, setupCount }) => (
+                <button
+                  key={map}
+                  type="button"
+                  className={`metric-row metric-row--button${selectedPriorityMap === map ? ' is-selected' : ''}`}
+                  onClick={() => setSelectedPriorityMap(map)}
+                >
                   <div>
                     <strong>{map}</strong>
-                    <p>{count} active storyline steps</p>
+                    <p>
+                      {currentCount} active now · {potentialCount} total in stack
+                      {setupCount > 0 ? ` · ${setupCount} setup step${setupCount === 1 ? '' : 's'}` : ''}
+                    </p>
                   </div>
-                  <span>{count}</span>
-                </div>
+                  <span>{potentialCount}</span>
+                </button>
               ))}
             </div>
           </article>

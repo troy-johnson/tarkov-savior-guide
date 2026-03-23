@@ -57,6 +57,47 @@ export const realRaidMaps = new Set([
   'Woods',
 ]);
 
+const raidMapAliases: Array<[string, string]> = [
+  ['The Lab', 'Labs'],
+  ['Labs', 'Labs'],
+  ['Ground Zero', 'Ground Zero'],
+  ['Streets of Tarkov', 'Streets of Tarkov'],
+  ['The Labyrinth', 'The Labyrinth'],
+  ['Lighthouse', 'Lighthouse'],
+  ['Interchange', 'Interchange'],
+  ['Shoreline', 'Shoreline'],
+  ['Reserve', 'Reserve'],
+  ['Terminal', 'Terminal'],
+  ['Customs', 'Customs'],
+  ['Factory', 'Factory'],
+  ['Woods', 'Woods'],
+];
+
+export function normalizeRaidMapLabel(mapLabel: string) {
+  const normalized = mapLabel.trim().toLowerCase();
+  const matched = raidMapAliases.find(([alias]) => alias.toLowerCase() === normalized);
+  return matched?.[1] ?? mapLabel.trim();
+}
+
+export function getRaidMapsForLabel(mapLabel: string) {
+  const normalizedLabel = mapLabel.trim();
+  const matches = new Set<string>();
+
+  for (const [alias, canonical] of raidMapAliases) {
+    const escapedAlias = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`(^|[\\s,\\/])${escapedAlias}(?=$|[\\s,\\/])`, 'i');
+    if (pattern.test(normalizedLabel)) {
+      matches.add(canonical);
+    }
+  }
+
+  return [...matches];
+}
+
+export function isRaidStepMap(mapLabel: string) {
+  return getRaidMapsForLabel(mapLabel).length > 0;
+}
+
 const defaultTime = '2026-01-01T00:00:00.000Z';
 
 export const seedMapTelemetry: Record<string, MapTelemetryRecord> = {

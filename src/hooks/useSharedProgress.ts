@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { seedBossIntelByMap, seedMapTelemetry, realRaidMaps } from '../components/dashboard/dashboardData';
+import { getRaidMapsForLabel, normalizeRaidMapLabel, seedBossIntelByMap, seedMapTelemetry } from '../components/dashboard/dashboardData';
 import { seedQuestSteps, seedStoryQuests } from '../data/tasks';
 import { getSupabaseClient, isSupabaseConfigured, schemaSql } from '../lib/supabase';
 import type {
@@ -152,6 +152,8 @@ const normalizeQuestStep = (step: QuestStepDefinition): QuestStepDefinition => (
   items_to_obtain: Array.isArray(step.items_to_obtain) ? step.items_to_obtain.filter((item): item is string => typeof item === 'string') : [],
   notes: step.notes ?? '',
 });
+
+const getStepRaidMaps = (step: Pick<QuestStepDefinition, 'map'>) => getRaidMapsForLabel(step.map);
 
 function getQuestActiveSortOrder(steps: StepView[]) {
   const nextRequired = steps.find((step) => step.is_required && step.progress.status !== 'done');
@@ -649,20 +651,112 @@ export function useSharedProgress() {
 
   const activeSteps = useMemo(() => storyQuests.flatMap((quest) => quest.activeSteps), [storyQuests]);
 
-  const activeMapBreakdown = useMemo(() => {
-    const counts = activeSteps.reduce<Record<string, number>>((acc, step) => {
-      if (!realRaidMaps.has(step.map)) {
-        return acc;
-      }
-      acc[step.map] = (acc[step.map] ?? 0) + 1;
-      return acc;
-    }, {});
-    return Object.entries(counts).sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]));
-  }, [activeSteps]);
+  const mapPriorityPlans = useMemo(() => {
+    const planByMap = new Map<string, {
+      map: string;
+      currentStepIds: Set<string>;
+      potentialStepIds: Set<string>;
+      setupStepIds: Set<string>;
+      currentSteps: StepView[];
+      setupSteps: StepView[];
+    }>();
 
-  const priorityMap = activeMapBreakdown[0]?.[0] ?? DEFAULT_MAP;
-  const prioritySteps = activeSteps.filter((step) => step.map === priorityMap);
-  const nextNonRaidSteps = activeSteps.filter((step) => !realRaidMaps.has(step.map));
+    const getPlan = (map: string) => {
+      const canonicalMap = normalizeRaidMapLabel(map);
+      let plan = planByMap.get(canonicalMap);
+      if (!plan) {
+        plan = {
+          map: canonicalMap,
+          currentStepIds: new Set<string>(),
+          potentialStepIds: new Set<string>(),
+          setupStepIds: new Set<string>(),
+          currentSteps: [],
+          setupSteps: [],
+        };
+        planByMap.set(canonicalMap, plan);
+      }
+      return plan;
+    };
+
+    for (const quest of storyQuests) {
+      const pendingRequiredSteps = quest.steps
+        .filter((step) => step.is_required && step.progress.status !== 'done')
+        .sort((left, right) => left.sort_order - right.sort_order);
+
+      if (pendingRequiredSteps.length === 0) {
+        continue;
+      }
+
+      const reachableSetupSteps: StepView[] = [];
+
+      for (const step of pendingRequiredSteps) {
+        const raidMaps = getStepRaidMaps(step);
+        if (raidMaps.length === 0) {
+          if (step.isActive) {
+            reachableSetupSteps.push(step);
+          }
+          continue;
+        }
+
+        for (const map of raidMaps) {
+          const plan = getPlan(map);
+          plan.potentialStepIds.add(step.id);
+
+          if (step.isActive) {
+            if (!plan.currentStepIds.has(step.id)) {
+              plan.currentStepIds.add(step.id);
+              plan.currentSteps.push(step);
+            }
+            continue;
+          }
+
+          for (const setupStep of reachableSetupSteps) {
+            if (!plan.setupStepIds.has(setupStep.id)) {
+              plan.setupStepIds.add(setupStep.id);
+              plan.setupSteps.push(setupStep);
+            }
+          }
+        }
+
+        if (step.isActive) {
+          reachableSetupSteps.push(step);
+        }
+      }
+    }
+
+    return [...planByMap.values()]
+      .map((plan) => ({
+        map: plan.map,
+        currentCount: plan.currentStepIds.size,
+        potentialCount: plan.potentialStepIds.size,
+        setupCount: plan.setupStepIds.size,
+        currentSteps: plan.currentSteps.sort((left, right) => left.sort_order - right.sort_order),
+        setupSteps: plan.setupSteps.sort((left, right) => left.sort_order - right.sort_order),
+      }))
+      .sort(
+        (left, right) =>
+          right.potentialCount - left.potentialCount ||
+          right.currentCount - left.currentCount ||
+          left.setupCount - right.setupCount ||
+          left.map.localeCompare(right.map),
+      );
+  }, [storyQuests]);
+
+  const activeMapBreakdown = useMemo(
+    () =>
+      mapPriorityPlans.map((plan) => ({
+        map: plan.map,
+        currentCount: plan.currentCount,
+        potentialCount: plan.potentialCount,
+        setupCount: plan.setupCount,
+      })),
+    [mapPriorityPlans],
+  );
+
+  const priorityMap = mapPriorityPlans[0]?.map ?? DEFAULT_MAP;
+  const prioritySteps = mapPriorityPlans[0]?.currentSteps ?? [];
+  const nextNonRaidSteps = activeSteps.filter((step) => getStepRaidMaps(step).length === 0);
+  const prioritySetupSteps = mapPriorityPlans[0]?.setupSteps ?? [];
   const mapTelemetry = mapTelemetryByMap[priorityMap] ?? mapTelemetryByMap[DEFAULT_MAP] ?? mapTelemetrySeedRows[0];
   const bossIntel = bossIntelByMap[priorityMap] ?? bossIntelByMap[DEFAULT_MAP] ?? bossIntelSeedRows[0];
 
@@ -684,9 +778,12 @@ export function useSharedProgress() {
     error,
     lastSyncedAt,
     loading,
+    mapTelemetryByMap,
+    mapPriorityPlans,
     mapTelemetry,
     nextNonRaidSteps,
     priorityMap,
+    prioritySetupSteps,
     prioritySteps,
     refresh,
     refreshing,
@@ -698,5 +795,6 @@ export function useSharedProgress() {
     remoteHealth,
     syncMode,
     updateStep,
+    bossIntelByMap,
   };
 }
