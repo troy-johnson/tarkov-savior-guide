@@ -9,13 +9,17 @@ function App() {
   const {
     activeMapBreakdown,
     bossIntel,
+    bossIntelByMap,
     completion,
     error,
     lastSyncedAt,
     loading,
+    mapTelemetryByMap,
+    mapPriorityPlans,
     mapTelemetry,
     nextNonRaidSteps,
     priorityMap,
+    prioritySetupSteps,
     prioritySteps,
     refresh,
     refreshing,
@@ -29,10 +33,17 @@ function App() {
   } = useSharedProgress();
   const [runInput, setRunInput] = useState(run.id);
   const [activeTab, setActiveTab] = useState(() => getTabFromHash(window.location.hash));
+  const [selectedPriorityMap, setSelectedPriorityMap] = useState(priorityMap);
 
   useEffect(() => {
     setRunInput(run.id);
   }, [run.id]);
+
+  useEffect(() => {
+    if (!mapPriorityPlans.some((plan) => plan.map === selectedPriorityMap)) {
+      setSelectedPriorityMap(priorityMap);
+    }
+  }, [mapPriorityPlans, priorityMap, selectedPriorityMap]);
 
   useEffect(() => {
     const syncTabFromLocation = () => setActiveTab(getTabFromHash(window.location.hash));
@@ -51,6 +62,15 @@ function App() {
   const activeTabMeta = useMemo(() => tabMeta[activeTab], [activeTab]);
   const requiredSteps = storyQuests.reduce((sum, quest) => sum + quest.requiredSteps, 0);
   const isSyncBusy = loading || refreshing;
+  const selectedPlan = useMemo(
+    () => mapPriorityPlans.find((plan) => plan.map === selectedPriorityMap) ?? mapPriorityPlans[0],
+    [mapPriorityPlans, selectedPriorityMap],
+  );
+  const displayedPriorityMap = selectedPlan?.map ?? priorityMap;
+  const displayedPrioritySteps = selectedPlan?.currentSteps ?? prioritySteps;
+  const displayedPrioritySetupSteps = selectedPlan?.setupSteps ?? prioritySetupSteps;
+  const selectedMapTelemetry = mapTelemetryByMap[displayedPriorityMap] ?? mapTelemetry;
+  const selectedBossIntel = bossIntelByMap[displayedPriorityMap] ?? bossIntel;
   const syncBannerText = error
     ? `Database unavailable, using local fallback: ${error}`
     : remoteHealth === 'connected'
@@ -118,7 +138,7 @@ function App() {
           </div>
           <div>
             <span className="meta-label">PRIORITY MAP</span>
-            <strong>{priorityMap}</strong>
+            <strong>{displayedPriorityMap}</strong>
           </div>
           <div>
             <span className="meta-label">TRACKED STEPS</span>
@@ -134,16 +154,19 @@ function App() {
       {activeTab === 'PRIORITY_DEPLOYMENT' ? (
         <PriorityDeploymentView
           activeMapBreakdown={activeMapBreakdown}
-          bossIntel={bossIntel}
+          bossIntel={selectedBossIntel}
           completion={completion}
           loading={isSyncBusy}
-          mapTelemetry={mapTelemetry}
+          mapTelemetry={selectedMapTelemetry}
           nextNonRaidSteps={nextNonRaidSteps}
-          priorityMap={priorityMap}
-          prioritySteps={prioritySteps}
+          priorityMap={displayedPriorityMap}
+          prioritySetupSteps={displayedPrioritySetupSteps}
+          prioritySteps={displayedPrioritySteps}
           refresh={refresh}
           run={run}
+          selectedPriorityMap={displayedPriorityMap}
           setStatus={setStatus}
+          setSelectedPriorityMap={setSelectedPriorityMap}
           syncMode={syncMode}
           updateStep={updateStep}
         />
