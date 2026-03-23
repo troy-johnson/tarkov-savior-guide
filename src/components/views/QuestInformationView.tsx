@@ -3,6 +3,7 @@ import type { StepStatus, StepView, StoryQuestView } from '../../types';
 import { statusLabel, stepTypeLabel } from '../dashboard/dashboardData';
 
 interface QuestInformationViewProps {
+  loading: boolean;
   setStatus: (stepId: string, status: StepStatus) => Promise<void>;
   storyQuests: StoryQuestView[];
   updateStep: (stepId: string, changes: Partial<Pick<StepView['progress'], 'status' | 'current_note'>>) => Promise<void>;
@@ -34,7 +35,7 @@ function getQuestStateTone(quest: StoryQuestView) {
   return 'not_started';
 }
 
-export function QuestInformationView({ setStatus, storyQuests, updateStep }: QuestInformationViewProps) {
+export function QuestInformationView({ loading, setStatus, storyQuests, updateStep }: QuestInformationViewProps) {
   const [selectedQuestId, setSelectedQuestId] = useState(storyQuests[0]?.id ?? '');
 
   useEffect(() => {
@@ -151,6 +152,7 @@ export function QuestInformationView({ setStatus, storyQuests, updateStep }: Que
                     <button
                       type="button"
                       className={`objective-checkbox status-${step.progress.status}`}
+                      disabled={loading}
                       onClick={() => void setStatus(step.id, step.progress.status === 'done' ? 'not_started' : 'done')}
                       aria-label={`Mark ${step.title} ${step.progress.status === 'done' ? 'not complete' : 'complete'}`}
                     >
@@ -165,7 +167,7 @@ export function QuestInformationView({ setStatus, storyQuests, updateStep }: Que
                   <div className="quest-step-row__controls">
                     <label>
                       <span className="meta-label">Step State</span>
-                      <select value={step.progress.status} onChange={(event) => void setStatus(step.id, event.target.value as StepStatus)}>
+                      <select disabled={loading} value={step.progress.status} onChange={(event) => void setStatus(step.id, event.target.value as StepStatus)}>
                         {statusOptions.map((status) => (
                           <option key={status} value={status}>{statusLabel[status]}</option>
                         ))}
@@ -174,6 +176,7 @@ export function QuestInformationView({ setStatus, storyQuests, updateStep }: Que
                     <label className="quest-info-card__note">
                       <span className="meta-label">Field Note</span>
                       <textarea
+                        disabled={loading}
                         rows={2}
                         value={step.progress.current_note}
                         onChange={(event) => void updateStep(step.id, { current_note: event.target.value, status: 'in_progress' })}

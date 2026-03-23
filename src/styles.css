@@ -101,11 +101,19 @@ textarea {
 
 .topbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'brand actions'
+    'nav nav';
   gap: 1.5rem;
-  align-items: center;
+  align-items: start;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.topbar__brand {
+  grid-area: brand;
+  min-width: 0;
 }
 
 .brand,
@@ -140,9 +148,11 @@ textarea {
 }
 
 .topbar__nav {
+  grid-area: nav;
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .tab-button,
@@ -173,6 +183,11 @@ textarea {
   border-color: #61503b;
 }
 
+.topbar > .refresh-button {
+  grid-area: actions;
+  justify-self: end;
+}
+
 .status-banner {
   margin-top: 1rem;
   display: flex;
@@ -182,6 +197,62 @@ textarea {
   background: rgba(255, 184, 77, 0.08);
   border: 1px solid rgba(255, 184, 77, 0.2);
   color: var(--accent);
+}
+
+.status-banner__content {
+  flex: 1;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.status-banner__progress {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.status-banner__progress small {
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.status-banner__progress-track {
+  position: relative;
+  overflow: hidden;
+  width: min(480px, 100%);
+  height: 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 184, 77, 0.16);
+}
+
+.status-banner__progress-fill {
+  position: absolute;
+  inset: 0 auto 0 -30%;
+  width: 30%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(255, 184, 77, 0), rgba(255, 184, 77, 0.9), rgba(255, 245, 214, 0.95));
+  box-shadow: 0 0 12px rgba(255, 184, 77, 0.35);
+  animation: status-banner-loading 1.4s ease-in-out infinite;
+}
+
+.status-banner--error .status-banner__progress-track {
+  border-color: rgba(255, 158, 158, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.status-banner--error .status-banner__progress-fill {
+  background: linear-gradient(90deg, rgba(255, 158, 158, 0), rgba(255, 176, 176, 0.9), rgba(255, 214, 214, 0.95));
+  box-shadow: 0 0 12px rgba(255, 158, 158, 0.25);
+}
+
+@keyframes status-banner-loading {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(430%);
+  }
 }
 
 .status-banner--error {
@@ -621,7 +692,16 @@ textarea {
   }
 
   .topbar {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'brand'
+      'actions'
+      'nav';
     justify-items: start;
+  }
+
+  .topbar > .refresh-button {
+    justify-self: start;
   }
 
   .task-card__meta {

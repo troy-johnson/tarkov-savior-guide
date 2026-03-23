@@ -6,7 +6,8 @@ A lightweight shared-run dashboard that syncs Tarkov Savior quest progress acros
 
 - Loads seeded task definitions immediately so the UI works during local setup.
 - Connects to Supabase when `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are configured.
-- Stores per-run progress in `runs` and `task_progress` tables.
+- Stores per-run progress in `runs` and `step_progress` tables.
+- Falls back to per-run localStorage progress snapshots when Supabase is unavailable or a write fails.
 - Subscribes to Supabase Realtime updates for shared progress changes.
 
 ## Setup
@@ -27,7 +28,10 @@ A lightweight shared-run dashboard that syncs Tarkov Savior quest progress acros
 The app also renders this schema in the UI for quick copy/paste:
 
 - `runs`
-- `tasks`
-- `task_progress`
+- `story_quests`
+- `quest_steps`
+- `step_progress`
+- `map_telemetry`
+- `boss_intel`
 
 These tables should match the types defined in `src/types.ts` and the SQL in `src/lib/supabase.ts`.

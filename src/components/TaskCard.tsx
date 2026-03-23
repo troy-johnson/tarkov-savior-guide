@@ -5,12 +5,13 @@ import { statusLabel, stepTypeLabel } from './dashboard/dashboardData';
 const statusOptions: StepStatus[] = ['not_started', 'in_progress', 'blocked', 'done'];
 
 interface TaskCardProps {
+  disabled?: boolean;
   step: StepView;
   onStatusChange: (stepId: string, status: StepStatus) => void;
   onNoteChange: (stepId: string, note: string) => void;
 }
 
-export function TaskCard({ step, onStatusChange, onNoteChange }: TaskCardProps) {
+export function TaskCard({ disabled = false, step, onStatusChange, onNoteChange }: TaskCardProps) {
   const handleNote = (event: ChangeEvent<HTMLTextAreaElement>) => {
     onNoteChange(step.id, event.target.value);
   };
@@ -24,7 +25,7 @@ export function TaskCard({ step, onStatusChange, onNoteChange }: TaskCardProps) 
         </div>
         <label className="task-card__select">
           <span className="meta-label">STATUS</span>
-          <select value={step.progress.status} onChange={(event) => onStatusChange(step.id, event.target.value as StepStatus)}>
+          <select disabled={disabled} value={step.progress.status} onChange={(event) => onStatusChange(step.id, event.target.value as StepStatus)}>
             {statusOptions.map((status) => (
               <option key={status} value={status}>
                 {statusLabel[status]}
@@ -54,6 +55,7 @@ export function TaskCard({ step, onStatusChange, onNoteChange }: TaskCardProps) 
       <label className="task-card__note">
         <span>Field note</span>
         <textarea
+          disabled={disabled}
           rows={3}
           value={step.progress.current_note}
           onChange={handleNote}

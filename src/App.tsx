@@ -11,12 +11,14 @@ function App() {
     bossIntel,
     completion,
     error,
+    lastSyncedAt,
     loading,
     mapTelemetry,
     nextNonRaidSteps,
     priorityMap,
     prioritySteps,
     refresh,
+    refreshing,
     run,
     selectRun,
     setStatus,
@@ -51,7 +53,7 @@ function App() {
   return (
     <main className="dashboard-shell">
       <header className="topbar">
-        <div>
+        <div className="topbar__brand">
           <div className="brand">TARKOV_SAVIOR_GUIDE</div>
           <div className="brand-subtitle">{activeTabMeta.description}</div>
         </div>
@@ -68,14 +70,24 @@ function App() {
             </button>
           ))}
         </nav>
-        <button type="button" className="refresh-button" onClick={() => void refresh()}>
-          REFRESH SYNC
+        <button type="button" className="refresh-button" disabled={loading || refreshing} onClick={() => void refresh()}>
+          {loading || refreshing ? 'SYNCING…' : 'REFRESH SYNC'}
         </button>
       </header>
 
-      {(error || loading) ? (
+      {(error || loading || refreshing) ? (
         <section className={`status-banner${error ? ' status-banner--error' : ''}`}>
-          <span>{error ? `Realtime sync fallback: ${error}` : 'Loading shared progress…'}</span>
+          <div className="status-banner__content">
+            <span>{error ? `Realtime sync fallback: ${error}` : refreshing ? 'Refreshing shared progress…' : 'Loading shared progress…'}</span>
+            {(loading || refreshing) ? (
+              <div className="status-banner__progress" aria-label="Shared progress is loading" aria-live="polite">
+                <div className="status-banner__progress-track" aria-hidden="true">
+                  <span className="status-banner__progress-fill" />
+                </div>
+                <small>{refreshing ? 'Pulling the latest run, quest, and progress rows from sync…' : 'Seeding the current run and syncing remote quest progress…'}</small>
+              </div>
+            ) : null}
+          </div>
           <span>{syncMode.toUpperCase()}</span>
         </section>
       ) : null}
@@ -85,7 +97,7 @@ function App() {
           <span className="meta-label">SHARED RUN LINK / INVITE CODE</span>
           <div className="control-card__inline">
             <input value={runInput} onChange={(event) => setRunInput(event.target.value)} placeholder="shared-savior-run" />
-            <button type="button" onClick={() => void selectRun(runInput)}>JOIN RUN</button>
+            <button type="button" disabled={loading} onClick={() => void selectRun(runInput)}>JOIN RUN</button>
           </div>
         </label>
         <div className="control-card control-card--stats">
@@ -105,6 +117,10 @@ function App() {
             <span className="meta-label">TRACKED STEPS</span>
             <strong>{requiredSteps}</strong>
           </div>
+          <div>
+            <span className="meta-label">LAST SYNC</span>
+            <strong>{lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'PENDING'}</strong>
+          </div>
         </div>
       </section>
 
@@ -113,6 +129,7 @@ function App() {
           activeMapBreakdown={activeMapBreakdown}
           bossIntel={bossIntel}
           completion={completion}
+          loading={loading}
           mapTelemetry={mapTelemetry}
           nextNonRaidSteps={nextNonRaidSteps}
           priorityMap={priorityMap}
@@ -127,7 +144,7 @@ function App() {
 
       {activeTab === 'STORYLINE_PROGRESS' ? <StorylineProgressView storyQuests={storyQuests} /> : null}
       {activeTab === 'QUEST_INFORMATION' ? (
-        <QuestInformationView storyQuests={storyQuests} setStatus={setStatus} updateStep={updateStep} />
+        <QuestInformationView loading={loading} storyQuests={storyQuests} setStatus={setStatus} updateStep={updateStep} />
       ) : null}
 
       <footer className="footer-bar">
