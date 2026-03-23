@@ -145,6 +145,13 @@ function writeLocalProgress(
 const mapTelemetrySeedRows = Object.values(seedMapTelemetry);
 const bossIntelSeedRows = Object.values(seedBossIntelByMap);
 const toRecordByMap = <T extends { map: string }>(rows: T[]) => Object.fromEntries(rows.map((row) => [row.map, row]));
+const normalizeQuestStep = (step: QuestStepDefinition): QuestStepDefinition => ({
+  ...step,
+  time_gate: step.time_gate ?? '',
+  required_items: Array.isArray(step.required_items) ? step.required_items.filter((item): item is string => typeof item === 'string') : [],
+  items_to_obtain: Array.isArray(step.items_to_obtain) ? step.items_to_obtain.filter((item): item is string => typeof item === 'string') : [],
+  notes: step.notes ?? '',
+});
 
 function getQuestActiveSortOrder(steps: StepView[]) {
   const nextRequired = steps.find((step) => step.is_required && step.progress.status !== 'done');
@@ -203,7 +210,7 @@ export function useSharedProgress() {
   const client = getSupabaseClient();
   const [run, setRun] = useState<RunRecord>({ id: readLocalRunId(), name: DEFAULT_RUN_NAME, created_at: new Date().toISOString() });
   const [quests, setQuests] = useState<StoryQuestDefinition[]>(seedStoryQuests);
-  const [steps, setSteps] = useState<QuestStepDefinition[]>(seedQuestSteps);
+  const [steps, setSteps] = useState<QuestStepDefinition[]>(seedQuestSteps.map(normalizeQuestStep));
   const [progressByStep, setProgressByStep] = useState<Record<string, StepProgressRecord>>({});
   const progressByStepRef = useRef<Record<string, StepProgressRecord>>({});
   const runIdRef = useRef(run.id);
@@ -370,7 +377,7 @@ export function useSharedProgress() {
         if (!active) {
           return;
         }
-        hydrateDefaults(seedQuestSteps, run.id, readLocalProgress(run.id));
+        hydrateDefaults(seedQuestSteps.map(normalizeQuestStep), run.id, readLocalProgress(run.id));
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
         setSyncMode('local-seed');
@@ -429,7 +436,7 @@ export function useSharedProgress() {
         }
 
         const resolvedQuests = (questRows ?? []).length > 0 ? questRows : seedStoryQuests;
-        const resolvedSteps = (stepRows ?? []).length > 0 ? stepRows : seedQuestSteps;
+        const resolvedSteps = ((stepRows ?? []).length > 0 ? stepRows : seedQuestSteps).map(normalizeQuestStep);
         const resolvedTelemetry = telemetryRows && telemetryRows.length > 0 ? toRecordByMap(telemetryRows) : seedMapTelemetry;
         const resolvedBossIntel = bossRows && bossRows.length > 0 ? toRecordByMap(bossRows) : seedBossIntelByMap;
 
@@ -478,10 +485,10 @@ export function useSharedProgress() {
         logRemoteFailure('load:local-seed-fallback', { error: loadError });
         setError(loadError instanceof Error ? loadError.message : 'Unable to load shared progress');
         setQuests(seedStoryQuests);
-        setSteps(seedQuestSteps);
+        setSteps(seedQuestSteps.map(normalizeQuestStep));
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
-        hydrateDefaults(seedQuestSteps, run.id, readLocalProgress(run.id));
+        hydrateDefaults(seedQuestSteps.map(normalizeQuestStep), run.id, readLocalProgress(run.id));
         setSyncMode('local-seed');
         setRemoteHealth(client ? 'degraded' : 'offline');
         setLastSyncedAt(new Date().toISOString());

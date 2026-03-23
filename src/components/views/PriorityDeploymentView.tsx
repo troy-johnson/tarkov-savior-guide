@@ -1,5 +1,5 @@
 import { TaskCard } from '../TaskCard';
-import { statusLabel, toDirectiveSubtitle, toGearList } from '../dashboard/dashboardData';
+import { statusLabel, toDirectiveSubtitle, toRequiredGearList } from '../dashboard/dashboardData';
 import type { BossIntelRecord, MapTelemetryRecord, RunRecord, StepStatus, StepView } from '../../types';
 
 interface PriorityDeploymentViewProps {
@@ -34,7 +34,7 @@ export function PriorityDeploymentView({
   updateStep,
 }: PriorityDeploymentViewProps) {
   const leadStep = prioritySteps[0];
-  const gearList = leadStep ? toGearList(leadStep) : [];
+  const gearList = toRequiredGearList(prioritySteps);
   const systemLogs = [
     `[SYS_LOG]: priority_map_${priorityMap.toLowerCase().replace(/\s+/g, '_')}`,
     `[SYS_LOG]: active_objectives_${prioritySteps.length}`,

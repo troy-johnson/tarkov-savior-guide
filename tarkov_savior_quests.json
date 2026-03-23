@@ -1,0 +1,2857 @@
+[
+  {
+    "quest_id": "tour",
+    "steps": [
+      {
+        "step": "Escape Ground Zero",
+        "map_or_module": "Ground Zero",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Therapist",
+        "map_or_module": "Therapist",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over the cash to Therapist",
+        "map_or_module": "Therapist",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Collect the required 250,000 Roubles",
+        "map_or_module": "Therapist",
+        "time_gate": "",
+        "required_items": [
+          "250,000 Roubles"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Ragman",
+        "map_or_module": "Ragman",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Interchange",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Tell Ragman what you found during the recon",
+        "map_or_module": "Ragman",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Skier",
+        "map_or_module": "Skier",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Customs",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over any 5 found in raid building materials items to Skier",
+        "map_or_module": "Skier",
+        "time_gate": "",
+        "required_items": [
+          "5 FIR building materials or tools"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Find any 5 items in raid from the building materials category",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [
+          "5 FIR building materials or tools"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Factory",
+        "map_or_module": "Factory",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over any 2 found in raid weapons to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [
+          "2 FIR weapons"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Find any 2 weapons in raid",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [
+          "2 FIR weapons"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Skier",
+        "map_or_module": "Skier",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Eliminate any 3 targets on Woods",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Woods",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the entrance to the port Terminal",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find a way to contact the soldiers at the Terminal",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Use the intercom to contact the port garrison",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn how to escape Tarkov",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Shoreline",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 5 PMC dogtags to Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [
+          "5 PMC dogtags"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Find 5 PMC dogtags in raid",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 20,000 USD to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [
+          "20,000 USD"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Collect the required 20,000 USD",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Ensure access to The Lab",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Access the secret TerraGroup facility",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain a keycard or access codes to enter the facility",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [
+          "TerraGroup Labs access keycard"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the entrance to the facility on Factory",
+        "map_or_module": "Factory",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the entrance to the facility on Streets of Tarkov",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Search the top management offices in The Lab",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Search the server room in The Lab",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the escape path through the drainage system in The Lab",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "falling-skies",
+    "steps": [
+      {
+        "step": "Locate the fallen plane",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach Loyalty Level 2 with Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Ask the traders about the fallen plane",
+        "map_or_module": "Prapor, Therapist, Skier, Mechanic, Jaeger",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Hand over 2,000 USD to Therapist to learn details about the SUV",
+        "map_or_module": "Therapist",
+        "time_gate": "",
+        "required_items": [
+          "2,000 USD"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Retrieve the flash drive from one of the G-Wagon SUVs",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [
+          "G-Wagon flash drive"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over the flash drive to Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for information from Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "1 hour",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Retrieve the plane's flight recorder",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Leave the flight recorder in the specified spot",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Visit Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 3 found in raid Rechargeable batteries",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [
+          "3 FIR Rechargeable battery"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 5 found in raid Printed circuit boards",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [
+          "5 FIR Printed circuit boards"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 2 found in raid Toolsets",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for information from Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "3-5 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over the flight crew's transcript to Prapor",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [
+          "Plane crew transcript"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over Elektronik's secure flash drive to Prapor",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [
+          "Elektronik's flash drive"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for information from Prapor",
+        "map_or_module": "",
+        "time_gate": "1-3 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Retrieve the armored case",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Find any additional clues",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Keep the armored case",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "You MUST keep the armored case to advance the savior storyline"
+      }
+    ]
+  },
+  {
+    "quest_id": "accidental-witness",
+    "steps": [
+      {
+        "step": "Figure out where Kozlov lived",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Note for Kozlov"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Read the note on Kozlov's door",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [
+          "Dorm room 110 key"
+        ],
+        "items_to_obtain": [
+          "Letter from Kozlov's room",
+          "Note from the repair shop"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Find out what Kozlov was involved in",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Access Kozlov's room",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Figure out where to get Kozlov's key",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Investigate Kozlov's room",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Ask the traders about Anastasia",
+        "map_or_module": "Skier",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Access Skier's accomplice's apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [
+          "Zmeisky 3 apartment key"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Find the key to the apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Skier's accomplice",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Investigate the apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Read the documents in Skier's accomplice's apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "FSB report",
+          "The Ninth Circle Issue #14",
+          "The Ninth Circle #19",
+          "Tarkov Herald Summary"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Streets of Tarkov",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Report to Skier",
+        "map_or_module": "Skier",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Ragman",
+        "map_or_module": "Ragman",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate Anastasia's apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Anastasia",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Investigate the entrance of Anastasia's building",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Letter from the mailbox",
+          "Tarkov Herald newspaper with article by A. Mikhailova"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Locate courier Pasha",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Search the ambush spot",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Unsealed envelope"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Skier",
+        "map_or_module": "Skier",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate Reshala's stash",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [
+          "Reshala's bunkhouse key"
+        ],
+        "items_to_obtain": [
+          "Note with an address"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and neutralize Reshala",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Note with a warning"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain the key to Reshala's stash",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Letter from Reshala's bunkhouse"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Investigate Reshala's bunkhouse",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain Reshalas's work notes",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain courier Pasha's belongings",
+        "map_or_module": "Customs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate Kozlov's hideout",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Audio tape with incriminating evidence",
+          "Newspaper clipping with a photo of Anastasia"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Locate and obtain Kozlov's evidence",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "batya",
+    "steps": [
+      {
+        "step": "Locate the traces of the BEAR special squad",
+        "map_or_module": "Customs, Wooeds, Reserve, or Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Bogatyrs patch"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain the Bogatyr squad patch",
+        "map_or_module": "Customs, Wooeds, Reserve, or Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the Bogatyr squad from the traders",
+        "map_or_module": "Jaeger",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the Ryabina outpost",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find more information about the Bogatyr squad",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Strelets' amulet",
+          "Hostage evac report from Voevoda"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain a keepsake of one of the Bogatyrs",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the Carousel outpost",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find the Bogatyr squad's personal notes",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Strelets' personal file",
+          "Strelets' note"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Strelets",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Taran",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Taran's personal file",
+          "Taran's postcard"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain a personal item of one of the Bogatyrs",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Voevoda",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find Voevoda's personal belongings",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Voevoda's personal file",
+          "Voevoda's audio recorder",
+          "Voevoda's thoughts audio tape"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain the squad commander's recorder",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the Gnezdo outpost",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Search the Gnezdo outpost",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Moreman's personal file",
+          "Bogatyr squad operations report",
+          "Map with triangulated signal",
+          "BEAR note from the outpost behind Ultra",
+          "First pice of code note",
+          "Audio tape with report"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Figure out what happened to the Bogatyr squad",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Figure out where the Bogatyr squad got ambushed",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the Bogatyr squad's activities",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the Bogatyr squad's members",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the ambush spot",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain more information about the Bogatyr squad",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Second piece of code note",
+          "Moreman's phone",
+          "Moreman's dogtag"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Inspect Moreman's body",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain Moreman's phone",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain a dogtag of one of the Bogatyrs",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Retrieve more information about the ambush from Moreman's phone",
+        "map_or_module": "Workbench",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Moreman's audio tape #1",
+          "moreman's audio tape #2"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Obtain Intelligence Center level 3",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Contact the Bogatyr squad",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Gain access to Lightkeeper",
+        "map_or_module": "Lightkeeper",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Stay on good terms with Lightkeeper",
+        "map_or_module": "Lightkeeper",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Bring all the Bogatyr squad's items to Lightkeeper",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [
+          "Taran's postcard",
+          "Voevoda's audio recorder",
+          "Strelets' amulet",
+          "Moreman's dogtag",
+          "Bogatyrs patch"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Voevoda to reach out",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "12-24 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Light Machine Guns skill level 5",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Assault Rifles skill level 10",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Stress Resistance skill level 10",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Strength skill level 15",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Eliminate any 15 targets without dying",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Eliminate 4 PMC operatives without dying",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Contact Voevoda",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the traces of the traitors",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Note mentioning Prapor"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Interrogate Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Figure out how the cultists are connected to the General",
+        "map_or_module": "Shoreline, Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Voevoda's photo with a cultist mark",
+          "Note mentioning General"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Lightkeeper",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Agent network deployment report"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Lightkeeper to prepare the documents on The Unheard",
+        "map_or_module": "",
+        "time_gate": "12 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "blue-fire",
+    "steps": [
+      {
+        "step": "Locate the traces of the BEAR special squad",
+        "map_or_module": "Customs, Wooeds, Reserve, or Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Bogatyrs patch"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain the Bogatyr squad patch",
+        "map_or_module": "Customs, Wooeds, Reserve, or Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the Bogatyr squad from the traders",
+        "map_or_module": "Jaeger",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the Ryabina outpost",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find more information about the Bogatyr squad",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Strelets' amulet",
+          "Hostage evac report from Voevoda"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain a keepsake of one of the Bogatyrs",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the Carousel outpost",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find the Bogatyr squad's personal notes",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Strelets' personal file",
+          "Strelets' note"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Strelets",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Taran",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Taran's personal file",
+          "Taran's postcard"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain a personal item of one of the Bogatyrs",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about Voevoda",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find Voevoda's personal belongings",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Voevoda's personal file",
+          "Voevoda's audio recorder",
+          "Voevoda's thoughts audio tape"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain the squad commander's recorder",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the Gnezdo outpost",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Search the Gnezdo outpost",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Moreman's personal file",
+          "Bogatyr squad operations report",
+          "Map with triangulated signal",
+          "BEAR note from the outpost behind Ultra",
+          "First pice of code note",
+          "Audio tape with report"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Figure out what happened to the Bogatyr squad",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Figure out where the Bogatyr squad got ambushed",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the Bogatyr squad's activities",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the Bogatyr squad's members",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the ambush spot",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain more information about the Bogatyr squad",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Second piece of code note",
+          "Moreman's phone",
+          "Moreman's dogtag"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Inspect Moreman's body",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain Moreman's phone",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain a dogtag of one of the Bogatyrs",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Retrieve more information about the ambush from Moreman's phone",
+        "map_or_module": "Workbench",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Moreman's audio tape #1",
+          "moreman's audio tape #2"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Obtain Intelligence Center level 3",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Contact the Bogatyr squad",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Gain access to Lightkeeper",
+        "map_or_module": "Lightkeeper",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Stay on good terms with Lightkeeper",
+        "map_or_module": "Lightkeeper",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Bring all the Bogatyr squad's items to Lightkeeper",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [
+          "Taran's postcard",
+          "Voevoda's audio recorder",
+          "Strelets' amulet",
+          "Moreman's dogtag",
+          "Bogatyrs patch"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Voevoda to reach out",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "12-24 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Light Machine Guns skill level 5",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Assault Rifles skill level 10",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Stress Resistance skill level 10",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach the Strength skill level 15",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Eliminate any 15 targets without dying",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Eliminate 4 PMC operatives without dying",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Contact Voevoda",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the traces of the traitors",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Note mentioning Prapor"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Interrogate Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Figure out how the cultists are connected to the General",
+        "map_or_module": "Shoreline, Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Voevoda's photo with a cultist mark",
+          "Note mentioning General"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Lightkeeper",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Agent network deployment report"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Lightkeeper to prepare the documents on The Unheard",
+        "map_or_module": "",
+        "time_gate": "12 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "the-unheard",
+    "steps": [
+      {
+        "step": "Learn more about TerraGroup's activities",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Document on changes in enterprise interactions",
+          "Cargo transport fax"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about the \"fuel\" mentioned in the note",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Find more information about the special catalyst shipment",
+        "map_or_module": "Factory",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Transport log with notes"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Locate Rzhevsky's service vehicle and obtain his personal belongings",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Hard drive from Rzhevsky's car"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Retrieve the data from the hard drive in Rzhevsky's car",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Read the transcript of Rzhevsky's conversation",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate and obtain the documents on the Blue Ice fuel catalyst research",
+        "map_or_module": "Factory",
+        "time_gate": "",
+        "required_items": [
+          "TerraGroup storage room keycard"
+        ],
+        "items_to_obtain": [
+          "Fuel catalyst test report",
+          "Burnt document"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Find as much information as possible about the plans of The Unheard",
+        "map_or_module": "Factory",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about A.P.'s activities",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "A.P. meeting audio tape Part 1",
+          "A.P. meeting audio tape Part 2"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about A.P.'s role",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Search for any mention of A.P. in The Lab",
+        "map_or_module": "The Lab",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate A.P.'s room in the Health Resort",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Find out which room A.P. was assigned to",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain A.P.'s personal belongings",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Sliderkey flash drive marked with A.P.",
+          "TerraGroup corporate apartmney key",
+          "Guard post note",
+          "Fragment of an unknown document"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Obtain A.P.'s data storage device",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Decrypt the flash drive from A.P.'s room",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Decrypted Sliderkey flash drive marked with A.P."
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Ask Mechanic for help",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 5,000,000 Roubles to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [
+          "5,000,000 Roubles"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over the A.P. flash drive to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for the news from Elektronik",
+        "map_or_module": "",
+        "time_gate": "3-24 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Integrate the tech files from A.P.'s flash drive into a TerraGroup keycard",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Reprogrammed keycard for A.P.'s apartment lock (Green)"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Access A.P.'s corporate apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [
+          "TerraGroup corporate apartment key",
+          "Reprogrammed keycard for A.P.'s apartment lock (Green)"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Investigate A.P.'s apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Access the hidden room in A.P.'s apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Study the TerraGroup documentation in A.P.'s office",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Order from TerraGroup Worldwide headquarters"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Study the role of the Blue Ice catalyst in The Unheard's protocol",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Copy of report for TG Worldwide"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Learn more about The Unheard's protocol",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Document mentioning a protocol"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Figure out how The Unheard are connected to Tarkov",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Document mentioning the Warden"
+        ],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "they-are-already-here",
+    "steps": [
+      {
+        "step": "Locate a place connected to the Eye of the World",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Cult victim audio tape #2"
+        ],
+        "notes": "Cult victim's apartment key cal aos be obtained"
+      },
+      {
+        "step": "Learn more about the cultist's victim from the torture room",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the cult victim's apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain the key to the apartment",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Investigate the victim's apartment",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Book of the Arrival",
+          "Note on preparations for the Arrival"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Obtain the victim's first audio tape",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Cult victim audio tape #1"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Ask Mechanic about the Eye of the World",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Gain access to Mechanic",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate and neutralize 2 Cultist priests",
+        "map_or_module": "Any map",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain more information about the Eye of the World",
+        "map_or_module": "Customs, Streets of Tarkov, or Reserve",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Cultist preist's note"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Locate the place marked with the Eye of the World on Lighthouse",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Victim's note"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Investigate the ransacked cultist room in the chalet",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Station 14-4 KORD Arshavin K. pass (Damaged)"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the victim's belongings",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate and obtain the key mentioned in the victim's note",
+        "map_or_module": "Lighthouse",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Locate the place marked with the Eye of the World on Woods",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Newspaper clipping from the cultists' house"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Investigate the cultists' house marked with the Eye of the World",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [
+          "Toolset"
+        ],
+        "items_to_obtain": [
+          "Programmer's note"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Locate the place marked with the Eye of the World on Shoreline",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Investigate the area around the Sordi communications tower",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Repair the Sordi tower",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Restore Arshavin's keycard",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Station 14-4 KORD Arshavin K. pass (Restored)"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Gain access to NGO Cobalt's secret facility",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [
+          "Station 14-4 KORD Arshavin K. pass (Restored)"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Restore power at the station",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Turn on the cooling system in the server room",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Install a flash drive to download the data",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [
+          "Secure Flash drive"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Investigate ARRS Station 14-4 KORD thoroughly",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Mysterious audio tape"
+        ],
+        "notes": "Bring audio recorder to listen to the tape"
+      },
+      {
+        "step": "Survive and extract from Interchange",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "Survive and extract"
+      },
+      {
+        "step": "Find a way to disconnect the station from external agents",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "ARRS station mechanic's notes"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Restore the ARRS station to backup settings",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "Only 1 player per raid can press the button and get progress on this objective. If you can't interact with it, return in a new raid."
+      },
+      {
+        "step": "(Optional) Check that the station power is turned on",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Collect the flash drive from the ARRS station",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Flash drive for ARRS station"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Survive and extract from Interchange",
+        "map_or_module": "Interchange",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "Survive and extract"
+      },
+      {
+        "step": "Hand over the flash drive with data to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Read the ARRS station specifications",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "ARRS system specifications"
+        ],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "the-labyrinth",
+    "steps": [
+      {
+        "step": "Ask the traders about the underground facility",
+        "map_or_module": "Jaeger",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Ask Therapist how to access the underground facility",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Jaeger to gather the keycards",
+        "map_or_module": "",
+        "time_gate": "24-48 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Figure out what happened to the BEAR squad",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the entrance to the underground facility beneath the Health Resort",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Access the facility",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the traces of the BEAR squad in The Labyrinth",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Leshy's orders"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Investigate the BEAR squad regroup spot at Item 1156",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the squad leader",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Gather more information about the squad",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Leshy's diary"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Investigate the 5 lab staff bodies",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [
+          "Observation room key"
+        ],
+        "items_to_obtain": [
+          "Assistant's notes on Group #3",
+          "#8",
+          "#3/#10",
+          "#12",
+          "TG-Vi-24 test subjects (5 notes total)"
+        ],
+        "notes": "Observation room key is In the hand of one of five lab technicians. Guaranteed spawn every raid."
+      },
+      {
+        "step": "(Optional) Access the locked office",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Listen to the audio tape from the office",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Deceased scientist's audio tape"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Hand over the audio tape to Jaeger",
+        "map_or_module": "Jaeger",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Read the Labyrinth facility research report",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Labyrinth facility research report"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate and obtain the Labyrinth facility research report",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "quest_id": "the-ticket",
+    "steps": [
+      {
+        "step": "Obtain Intelligence Center level 1",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Mr. Kerman to reach out",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "12 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Prapor",
+        "map_or_module": "Prapor",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Unlock the armored case",
+        "map_or_module": "Workbench",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain the \"Ticket\"",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Ask Mechanic for help",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain the Experimental signal jammer",
+        "map_or_module": "Labs",
+        "time_gate": "",
+        "required_items": [
+          "TerraGroup Labs access keycard"
+        ],
+        "items_to_obtain": [
+          "Experimental signal jammer"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Gain access to The Lab",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain the TerraGroup Labs access keycard",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Use the Experimental signal jammer to unlock the case",
+        "map_or_module": "Workbench",
+        "time_gate": "",
+        "required_items": [
+          "Experimental signal jammer",
+          "Armored case"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Read the instructions from the armored case",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "Kruglov's RFID keycard",
+          "RFID caard manual"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "Contact Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Accept Mr. Kerman's offer",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "You MUST accept Mr. Kerman's offer to continue the savior path"
+      },
+      {
+        "step": "Activate the RFID card from the case",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain Solar Power level 1",
+        "map_or_module": "Solar Power",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain a Blank RFID keycard",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain the Laboratory master pass",
+        "map_or_module": "Labs",
+        "time_gate": "",
+        "required_items": [
+          "TerraGroup Labs access keycard",
+          "TerraGroup Labs keycard (Black)"
+        ],
+        "items_to_obtain": [
+          "TerraGroup Labs master keycard"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Gain access to The Lab",
+        "map_or_module": "Labs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain an RFID card encryption device",
+        "map_or_module": "Labs",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "Scripted to fail. Survive a total of 30 minutes on Labs (doesn't need to be the same raid). Once the objective fails, Mr. Kerman will contact you."
+      },
+      {
+        "step": "Talk to Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for a response from Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "12 - 24 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Hand over 40 Physical Bitcoins to Mechanic",
+        "map_or_module": "Mechanic",
+        "time_gate": "",
+        "required_items": [
+          "40 Physical Bitcoins"
+        ],
+        "items_to_obtain": [
+          "Elektronik's key"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain Bitcoin Farm level 1",
+        "map_or_module": "Bitcoin Farm",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain 40 Physical Bitcoins to pay for Elektronik's services",
+        "map_or_module": "",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Collect the RFID card encryption device to activate Kruglov's keycard",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [
+          "RFID keycard encryption device"
+        ],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Gain access to Streets of Tarkov",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Access Kruglov's apartment on Streets of Tarkov",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Use the Laboratory master pass to activate Kruglov's keycard",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Arrive at the entrance pathway to the port Terminal",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [
+          "Activated Kruglov's RFID keycard"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Swipe the keycard at the intercom reader",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "You MUST say yes to helping Mr. Kerman"
+      },
+      {
+        "step": "Agree to find dirt on TerraGroup for Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain Intelligence Center level 3",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain Folder with intelligence on Norvinsk region facilities",
+        "map_or_module": "Labs",
+        "time_gate": "",
+        "required_items": [
+          "TerraGroup Labs access keycard",
+          "TerraGroup Labs keycard (Black)"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Obtain Transcript of conversation with Ms. A.",
+        "map_or_module": "Streets of Tarkov",
+        "time_gate": "",
+        "required_items": [
+          "Cardinal apartment key"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Deliver the 8 major TerraGroup evidence to Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "Complete other storyline quests to obtain and hand in all evidence"
+      },
+      {
+        "step": "(Optional) Deliver the 32 minor TerraGroup evidence to Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": "Complete other storyline quests to obtain and hand in all evidence"
+      },
+      {
+        "step": "Negotiate with Mr. Kerman",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Confirm with Mr. Kerman that all the evidence has been delivered",
+        "map_or_module": "Intelligence Center",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Wait for Mr. Kerman's trusted contact to get in touch",
+        "map_or_module": "",
+        "time_gate": "24-48 hours",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Talk to Fence",
+        "map_or_module": "Fence",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Complete Fence's assignments",
+        "map_or_module": "Fence",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Keep the standing with Fence above 4.0",
+        "map_or_module": "Fence",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Extract through the Friendship Bridge (Co-Op) on Woods",
+        "map_or_module": "Woods",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Extract through the Scav Lands (Co-Op) on Reserve",
+        "map_or_module": "Reserve",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Reach 0.4 standing with BTR Driver",
+        "map_or_module": "BTR Driver",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Arrive at the entrance pathway to the port Terminal",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Bring the Reprogrammed RFID keycard with Mr. Kerman's hash codes",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Swipe the keycard at the intercom reader",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Access the port Terminal",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Bring the Secure container Alpha-1 with TerraGroup evidence",
+        "map_or_module": "Shoreline",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Pass the security check",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "Escape from Tarkov",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the armory with the confiscated equipment",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [
+          "Armory key"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Retrieve the Secure container Alpha-1",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain the keycard to unlock the service passage",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the exit leading to the Terminal loading zone",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Unlock the service passage inside the seaport building",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Access the Terminal loading zone",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [
+          "Black Division keycard"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the way into the fuel depot",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [
+          "SZ-1 explosive charge"
+        ],
+        "items_to_obtain": [],
+        "notes": "Only need the SZ-1 explosive charge if you are alone and your strength isn't at elite level"
+      },
+      {
+        "step": "(Optional) Figure out how to restore power to the pumping station",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain the diagram of the electrical panels",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Drain the water in the pumping station",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [
+          "Toolset"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Obtain the key to the gate blocking the road to the pier",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [
+          "Pier door key"
+        ],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Locate the exit leading to the pier",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      },
+      {
+        "step": "(Optional) Reach the evacuation area at the pier",
+        "map_or_module": "Terminal",
+        "time_gate": "",
+        "required_items": [],
+        "items_to_obtain": [],
+        "notes": ""
+      }
+    ]
+  }
+]

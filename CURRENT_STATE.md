@@ -36,6 +36,7 @@ These sections are currently presentation-layer only and are **not** backed by d
 - Map telemetry cards now load from the `map_telemetry` table, with seeded fallback rows when Supabase is unavailable or empty.
 - Boss intel now loads from the `boss_intel` table, with seeded fallback rows when Supabase is unavailable or empty.
 - Gear recommendations are derived from task requirements via `toGearList()` in `src/components/dashboard/dashboardData.ts`.
+- The priority deployment "REQUIRED GEAR" rail now prefers `quest_steps.required_items` across all active steps on the target map, with the older title/details heuristics only used as a fallback when those arrays are empty.
 - `STORYLINE_PROGRESS` summaries are derived from the current loaded task/task-progress dataset in the client.
 - `QUEST_INFORMATION` detail cards are derived from the current loaded task/task-progress dataset in the client.
 - System log lines are derived strings built from the current active task, sync mode, and completion percentage.
@@ -74,6 +75,7 @@ Potential next steps:
 - `runs` (run identity/metadata only)
 - `story_quests`
 - `quest_steps`
+- `quest_steps.time_gate`, `quest_steps.required_items`, `quest_steps.items_to_obtain`, and `quest_steps.notes` are now expected by the client when present in Supabase.
 - `step_progress` (canonical checklist state)
 - `map_telemetry`
 - `boss_intel`
@@ -87,6 +89,7 @@ If we want the dashboard to become fully data-driven, we likely need additional 
 - richer boss intel history / threat feed events
 - richer map metadata / map assets
 - gear recommendations or loot requirements
+- automated ingestion of the published storyline quest spreadsheet into Supabase; the repo now includes a SQL update statement scaffold, but the exact spreadsheet rows still need to be pasted/exported into that payload
 - storyline summaries
 - richer task notes / event log / activity history
 - page-specific view models for storyline and quest detail screens
