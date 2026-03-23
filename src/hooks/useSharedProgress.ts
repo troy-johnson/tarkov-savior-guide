@@ -1,27 +1,28 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { seedTasks } from '../data/tasks';
-import { seedBossIntelByMap, seedMapTelemetry } from '../components/dashboard/dashboardData';
+import { seedBossIntelByMap, seedMapTelemetry, realRaidMaps } from '../components/dashboard/dashboardData';
+import { seedQuestSteps, seedStoryQuests } from '../data/tasks';
 import { getSupabaseClient, isSupabaseConfigured, schemaSql } from '../lib/supabase';
 import type {
   BossIntelRecord,
   MapTelemetryRecord,
+  QuestStepDefinition,
   RunRecord,
-  SharedTaskView,
-  TaskDefinition,
-  TaskProgressRecord,
-  TaskStatus,
+  StepProgressRecord,
+  StepStatus,
+  StepView,
+  StoryQuestDefinition,
+  StoryQuestView,
 } from '../types';
 
 const STORAGE_KEY = 'tarkov-savior-guide-run';
 const DEFAULT_RUN_ID = 'shared-savior-run';
 const DEFAULT_RUN_NAME = 'Shared Savior Run';
-const DEFAULT_MAP = 'Labs';
+const DEFAULT_MAP = 'Ground Zero';
 
-const createDefaultProgress = (runId: string, taskId: string): TaskProgressRecord => ({
+const createDefaultProgress = (runId: string, stepId: string): StepProgressRecord => ({
   run_id: runId,
-  task_id: taskId,
+  step_id: stepId,
   status: 'not_started',
-  percent_complete: 0,
   current_note: '',
   updated_at: new Date().toISOString(),
 });
@@ -35,18 +36,67 @@ const writeLocalRunId = (runId: string) => {
 
 const mapTelemetrySeedRows = Object.values(seedMapTelemetry);
 const bossIntelSeedRows = Object.values(seedBossIntelByMap);
-
 const toRecordByMap = <T extends { map: string }>(rows: T[]) => Object.fromEntries(rows.map((row) => [row.map, row]));
+
+function getQuestActiveSortOrder(steps: StepView[]) {
+  const nextRequired = steps.find((step) => step.is_required && step.progress.status !== 'done');
+  return nextRequired?.sort_order;
+}
+
+function hydrateQuestViews(
+  quests: StoryQuestDefinition[],
+  steps: QuestStepDefinition[],
+  progressByStep: Record<string, StepProgressRecord>,
+  runId: string,
+): { storyQuests: StoryQuestView[]; allSteps: StepView[] } {
+  const questById = Object.fromEntries(quests.map((quest) => [quest.id, quest]));
+
+  const stepsWithQuest = [...steps]
+    .sort((left, right) => left.sort_order - right.sort_order)
+    .map((step) => ({
+      ...step,
+      quest: questById[step.quest_id],
+      progress: progressByStep[step.id] ?? createDefaultProgress(runId, step.id),
+      isActive: false,
+      isComplete: (progressByStep[step.id] ?? createDefaultProgress(runId, step.id)).status === 'done',
+    } satisfies StepView));
+
+  const stepsByQuest = stepsWithQuest.reduce<Record<string, StepView[]>>((acc, step) => {
+    acc[step.quest_id] ??= [];
+    acc[step.quest_id].push(step);
+    return acc;
+  }, {});
+
+  const storyQuests = quests
+    .map((quest) => {
+      const questSteps = (stepsByQuest[quest.id] ?? []).sort((left, right) => left.sort_order - right.sort_order);
+      const activeSortOrder = getQuestActiveSortOrder(questSteps);
+      const activeSteps = questSteps.filter((step) => step.progress.status !== 'done' && step.sort_order === activeSortOrder);
+      activeSteps.forEach((step) => {
+        step.isActive = true;
+      });
+      const requiredSteps = questSteps.filter((step) => step.is_required).length;
+      const completedSteps = questSteps.filter((step) => step.is_required && step.progress.status === 'done').length;
+      return {
+        ...quest,
+        steps: questSteps,
+        activeSteps,
+        completedSteps,
+        requiredSteps,
+        isComplete: requiredSteps > 0 && completedSteps === requiredSteps,
+      } satisfies StoryQuestView;
+    })
+    .sort((left, right) => left.sort_order - right.sort_order);
+
+  return { storyQuests, allSteps: storyQuests.flatMap((quest) => quest.steps) };
+}
 
 export function useSharedProgress() {
   const client = getSupabaseClient();
-  const [run, setRun] = useState<RunRecord>({
-    id: readLocalRunId(),
-    name: DEFAULT_RUN_NAME,
-    created_at: new Date().toISOString(),
-  });
-  const [tasks, setTasks] = useState<TaskDefinition[]>(seedTasks);
-  const [progressByTask, setProgressByTask] = useState<Record<string, TaskProgressRecord>>({});
+  const [run, setRun] = useState<RunRecord>({ id: readLocalRunId(), name: DEFAULT_RUN_NAME, created_at: new Date().toISOString() });
+  const [quests, setQuests] = useState<StoryQuestDefinition[]>(seedStoryQuests);
+  const [steps, setSteps] = useState<QuestStepDefinition[]>(seedQuestSteps);
+  const [progressByStep, setProgressByStep] = useState<Record<string, StepProgressRecord>>({});
   const [mapTelemetryByMap, setMapTelemetryByMap] = useState<Record<string, MapTelemetryRecord>>(seedMapTelemetry);
   const [bossIntelByMap, setBossIntelByMap] = useState<Record<string, BossIntelRecord>>(seedBossIntelByMap);
   const [loading, setLoading] = useState(true);
@@ -54,14 +104,15 @@ export function useSharedProgress() {
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
-  const hydrateDefaults = useCallback((taskList: TaskDefinition[], runId: string, rows: TaskProgressRecord[] = []) => {
-    const nextProgress = Object.fromEntries(
-      taskList.map((task) => {
-        const persisted = rows.find((row) => row.task_id === task.id);
-        return [task.id, persisted ?? createDefaultProgress(runId, task.id)];
-      }),
+  const hydrateDefaults = useCallback((stepList: QuestStepDefinition[], runId: string, rows: StepProgressRecord[] = []) => {
+    setProgressByStep(
+      Object.fromEntries(
+        stepList.map((step) => {
+          const persisted = rows.find((row) => row.step_id === step.id);
+          return [step.id, persisted ?? createDefaultProgress(runId, step.id)];
+        }),
+      ),
     );
-    setProgressByTask(nextProgress);
   }, []);
 
   useEffect(() => {
@@ -72,7 +123,7 @@ export function useSharedProgress() {
       setError(null);
 
       if (!client) {
-        hydrateDefaults(seedTasks, run.id);
+        hydrateDefaults(seedQuestSteps, run.id);
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
         setLoading(false);
@@ -81,25 +132,27 @@ export function useSharedProgress() {
 
       try {
         const [
-          { data: taskRows, error: taskError },
-          { data: runRows, error: runError },
+          { data: questRows, error: questError },
+          { data: stepRows, error: stepError },
+          { data: runRow, error: runError },
           { data: progressRows, error: progressError },
           { data: telemetryRows, error: telemetryError },
           { data: bossRows, error: bossError },
         ] = await Promise.all([
-          client.from('tasks').select('*').order('sort_order', { ascending: true }),
+          client.from('story_quests').select('*').order('sort_order', { ascending: true }),
+          client.from('quest_steps').select('*').order('sort_order', { ascending: true }),
           client.from('runs').select('*').eq('id', run.id).maybeSingle(),
-          client.from('task_progress').select('*').eq('run_id', run.id),
+          client.from('step_progress').select('*').eq('run_id', run.id),
           client.from('map_telemetry').select('*'),
           client.from('boss_intel').select('*'),
         ]);
 
-        if (taskError || runError || progressError || telemetryError || bossError) {
-          throw taskError ?? runError ?? progressError ?? telemetryError ?? bossError;
+        if (questError || stepError || runError || progressError || telemetryError || bossError) {
+          throw questError ?? stepError ?? runError ?? progressError ?? telemetryError ?? bossError;
         }
 
-        const shouldSeedTasks = (taskRows ?? []).length === 0;
-        const resolvedTasks = shouldSeedTasks ? seedTasks : taskRows ?? seedTasks;
+        const resolvedQuests = (questRows ?? []).length > 0 ? questRows : seedStoryQuests;
+        const resolvedSteps = (stepRows ?? []).length > 0 ? stepRows : seedQuestSteps;
         const resolvedTelemetry = telemetryRows && telemetryRows.length > 0 ? toRecordByMap(telemetryRows) : seedMapTelemetry;
         const resolvedBossIntel = bossRows && bossRows.length > 0 ? toRecordByMap(bossRows) : seedBossIntelByMap;
 
@@ -107,24 +160,32 @@ export function useSharedProgress() {
           return;
         }
 
-        setTasks(resolvedTasks);
+        setQuests(resolvedQuests);
+        setSteps(resolvedSteps);
         setMapTelemetryByMap(resolvedTelemetry);
         setBossIntelByMap(resolvedBossIntel);
 
-        if (!runRows) {
+        if (!runRow) {
           const insertedRun: RunRecord = { id: run.id, name: run.name, created_at: new Date().toISOString() };
           const { error: insertRunError } = await client.from('runs').upsert(insertedRun as never);
           if (insertRunError) {
             throw insertRunError;
           }
         } else {
-          setRun(runRows);
+          setRun(runRow);
         }
 
-        if (shouldSeedTasks) {
-          const { error: taskUpsertError } = await client.from('tasks').upsert(seedTasks as never);
-          if (taskUpsertError) {
-            throw taskUpsertError;
+        if ((questRows ?? []).length === 0) {
+          const { error: seedQuestError } = await client.from('story_quests').upsert(seedStoryQuests as never);
+          if (seedQuestError) {
+            throw seedQuestError;
+          }
+        }
+
+        if ((stepRows ?? []).length === 0) {
+          const { error: seedStepError } = await client.from('quest_steps').upsert(seedQuestSteps as never);
+          if (seedStepError) {
+            throw seedStepError;
           }
         }
 
@@ -142,17 +203,18 @@ export function useSharedProgress() {
           }
         }
 
-        hydrateDefaults(resolvedTasks, run.id, progressRows ?? []);
+        hydrateDefaults(resolvedSteps, run.id, progressRows ?? []);
         setSyncMode('supabase');
       } catch (loadError) {
         if (!active) {
           return;
         }
         setError(loadError instanceof Error ? loadError.message : 'Unable to load shared progress');
-        setTasks(seedTasks);
+        setQuests(seedStoryQuests);
+        setSteps(seedQuestSteps);
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
-        hydrateDefaults(seedTasks, run.id);
+        hydrateDefaults(seedQuestSteps, run.id);
         setSyncMode('local-seed');
       } finally {
         if (active) {
@@ -162,7 +224,6 @@ export function useSharedProgress() {
     }
 
     void load();
-
     return () => {
       active = false;
     };
@@ -173,22 +234,15 @@ export function useSharedProgress() {
       return;
     }
 
-    const taskProgressChannel = client
-      .channel(`task_progress:${run.id}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'task_progress', filter: `run_id=eq.${run.id}` },
-        (payload) => {
-          const next = payload.new as TaskProgressRecord;
-          if (!next?.task_id) {
-            return;
-          }
-          setProgressByTask((current) => ({
-            ...current,
-            [next.task_id]: next,
-          }));
-        },
-      )
+    const stepProgressChannel = client
+      .channel(`step_progress:${run.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'step_progress', filter: `run_id=eq.${run.id}` }, (payload) => {
+        const next = payload.new as StepProgressRecord;
+        if (!next?.step_id) {
+          return;
+        }
+        setProgressByStep((current) => ({ ...current, [next.step_id]: next }));
+      })
       .subscribe();
 
     const mapTelemetryChannel = client
@@ -198,10 +252,7 @@ export function useSharedProgress() {
         if (!next?.map) {
           return;
         }
-        setMapTelemetryByMap((current) => ({
-          ...current,
-          [next.map]: next,
-        }));
+        setMapTelemetryByMap((current) => ({ ...current, [next.map]: next }));
       })
       .subscribe();
 
@@ -212,101 +263,99 @@ export function useSharedProgress() {
         if (!next?.map) {
           return;
         }
-        setBossIntelByMap((current) => ({
-          ...current,
-          [next.map]: next,
-        }));
+        setBossIntelByMap((current) => ({ ...current, [next.map]: next }));
       })
       .subscribe();
 
     return () => {
-      void client.removeChannel(taskProgressChannel);
+      void client.removeChannel(stepProgressChannel);
       void client.removeChannel(mapTelemetryChannel);
       void client.removeChannel(bossIntelChannel);
     };
   }, [client, run.id]);
 
-  const updateTask = useCallback(
-    async (taskId: string, changes: Partial<Pick<TaskProgressRecord, 'status' | 'percent_complete' | 'current_note'>>) => {
-      const current = progressByTask[taskId] ?? createDefaultProgress(run.id, taskId);
-      const next: TaskProgressRecord = {
-        ...current,
-        ...changes,
-        updated_at: new Date().toISOString(),
-      };
+  const updateStep = useCallback(
+    async (stepId: string, changes: Partial<Pick<StepProgressRecord, 'status' | 'current_note'>>) => {
+      const current = progressByStep[stepId] ?? createDefaultProgress(run.id, stepId);
+      const next = { ...current, ...changes, updated_at: new Date().toISOString() };
 
-      setProgressByTask((existing) => ({
-        ...existing,
-        [taskId]: next,
-      }));
+      setProgressByStep((existing) => ({ ...existing, [stepId]: next }));
 
       if (!client) {
         return;
       }
 
-      const { error: upsertError } = await client.from('task_progress').upsert(next as never);
+      const { error: upsertError } = await client.from('step_progress').upsert(next as never);
       if (upsertError) {
         setError(upsertError.message);
       }
     },
-    [client, progressByTask, run.id],
+    [client, progressByStep, run.id],
   );
+
+  const setStatus = useCallback(async (stepId: string, status: StepStatus) => {
+    await updateStep(stepId, { status });
+  }, [updateStep]);
 
   const selectRun = useCallback(async (runId: string, runName?: string) => {
     const trimmed = runId.trim() || DEFAULT_RUN_ID;
     writeLocalRunId(trimmed);
-    setRun({
-      id: trimmed,
-      name: runName?.trim() || DEFAULT_RUN_NAME,
-      created_at: new Date().toISOString(),
-    });
+    setRun({ id: trimmed, name: runName?.trim() || DEFAULT_RUN_NAME, created_at: new Date().toISOString() });
   }, []);
 
   const refresh = useCallback(async () => {
     setReloadToken((current) => current + 1);
   }, []);
 
-  const sharedTasks = useMemo<SharedTaskView[]>(() => {
-    return [...tasks]
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map((task) => ({
-        ...task,
-        progress: progressByTask[task.id] ?? createDefaultProgress(run.id, task.id),
-      }));
-  }, [progressByTask, run.id, tasks]);
+  const { storyQuests, allSteps } = useMemo(() => hydrateQuestViews(quests, steps, progressByStep, run.id), [progressByStep, quests, run.id, steps]);
+
+  const activeSteps = useMemo(() => storyQuests.flatMap((quest) => quest.activeSteps), [storyQuests]);
+
+  const activeMapBreakdown = useMemo(() => {
+    const counts = activeSteps.reduce<Record<string, number>>((acc, step) => {
+      if (!realRaidMaps.has(step.map)) {
+        return acc;
+      }
+      acc[step.map] = (acc[step.map] ?? 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(counts).sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]));
+  }, [activeSteps]);
+
+  const priorityMap = activeMapBreakdown[0]?.[0] ?? DEFAULT_MAP;
+  const prioritySteps = activeSteps.filter((step) => step.map === priorityMap);
+  const nextNonRaidSteps = activeSteps.filter((step) => !realRaidMaps.has(step.map));
+  const mapTelemetry = mapTelemetryByMap[priorityMap] ?? mapTelemetryByMap[DEFAULT_MAP] ?? mapTelemetrySeedRows[0];
+  const bossIntel = bossIntelByMap[priorityMap] ?? bossIntelByMap[DEFAULT_MAP] ?? bossIntelSeedRows[0];
 
   const completion = useMemo(() => {
-    if (sharedTasks.length === 0) {
+    const requiredSteps = allSteps.filter((step) => step.is_required);
+    if (requiredSteps.length === 0) {
       return 0;
     }
-    return Math.round(sharedTasks.reduce((sum, task) => sum + task.progress.percent_complete, 0) / sharedTasks.length);
-  }, [sharedTasks]);
-
-  const setStatus = useCallback(
-    async (taskId: string, status: TaskStatus) => {
-      const percent_complete = status === 'done' ? 100 : progressByTask[taskId]?.percent_complete ?? 0;
-      await updateTask(taskId, { status, percent_complete });
-    },
-    [progressByTask, updateTask],
-  );
-
-  const activeMap = sharedTasks.find((task) => task.progress.status !== 'done')?.map ?? sharedTasks[0]?.map ?? DEFAULT_MAP;
-  const mapTelemetry = mapTelemetryByMap[activeMap] ?? mapTelemetryByMap[DEFAULT_MAP] ?? mapTelemetrySeedRows[0];
-  const bossIntel = bossIntelByMap[activeMap] ?? bossIntelByMap[DEFAULT_MAP] ?? bossIntelSeedRows[0];
+    const completed = requiredSteps.filter((step) => step.progress.status === 'done').length;
+    return Math.round((completed / requiredSteps.length) * 100);
+  }, [allSteps]);
 
   return {
+    activeMapBreakdown,
+    activeSteps,
+    allSteps,
     bossIntel,
     completion,
     error,
     loading,
     mapTelemetry,
+    nextNonRaidSteps,
+    priorityMap,
+    prioritySteps,
     refresh,
     run,
     schemaSql,
     selectRun,
     setStatus,
-    sharedTasks,
+    storyQuests,
     syncMode,
-    updateTask,
+    updateStep,
   };
 }

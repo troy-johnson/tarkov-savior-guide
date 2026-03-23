@@ -1,41 +1,44 @@
 import { TaskCard } from '../TaskCard';
 import { statusLabel, toDirectiveSubtitle, toGearList } from '../dashboard/dashboardData';
-import type { BossIntelRecord, MapTelemetryRecord, RunRecord, SharedTaskView } from '../../types';
+import type { BossIntelRecord, MapTelemetryRecord, RunRecord, StepStatus, StepView } from '../../types';
 
 interface PriorityDeploymentViewProps {
-  activeTask?: SharedTaskView;
+  activeMapBreakdown: Array<[string, number]>;
   bossIntel: BossIntelRecord;
   completion: number;
   mapTelemetry: MapTelemetryRecord;
+  nextNonRaidSteps: StepView[];
+  priorityMap: string;
+  prioritySteps: StepView[];
   refresh: () => Promise<void>;
   run: RunRecord;
-  setStatus: (taskId: string, status: SharedTaskView['progress']['status']) => Promise<void>;
-  sharedTasks: SharedTaskView[];
+  setStatus: (stepId: string, status: StepStatus) => Promise<void>;
   syncMode: 'supabase' | 'local-seed';
-  updateTask: (taskId: string, changes: Partial<Pick<SharedTaskView['progress'], 'status' | 'percent_complete' | 'current_note'>>) => Promise<void>;
+  updateStep: (stepId: string, changes: Partial<Pick<StepView['progress'], 'status' | 'current_note'>>) => Promise<void>;
 }
 
 export function PriorityDeploymentView({
-  activeTask,
+  activeMapBreakdown,
   bossIntel,
   completion,
   mapTelemetry,
+  nextNonRaidSteps,
+  priorityMap,
+  prioritySteps,
   refresh,
   run,
   setStatus,
-  sharedTasks,
   syncMode,
-  updateTask,
+  updateStep,
 }: PriorityDeploymentViewProps) {
-  const gearList = activeTask ? toGearList(activeTask) : [];
-  const systemLogs = !activeTask
-    ? ['[SYS_LOG]: awaiting_task_stream...']
-    : [
-        `[SYS_LOG]: map_stream_established...${activeTask.map.toLowerCase().replace(/\s+/g, '_')}`,
-        `[SYS_LOG]: telemetry_sync_${mapTelemetry.updated_at}`,
-        `[SYS_LOG]: boss_intel_sync_${bossIntel.updated_at}`,
-        `[SYS_LOG]: sync_mode_${syncMode} // completion_${completion}%`,
-      ];
+  const leadStep = prioritySteps[0];
+  const gearList = leadStep ? toGearList(leadStep) : [];
+  const systemLogs = [
+    `[SYS_LOG]: priority_map_${priorityMap.toLowerCase().replace(/\s+/g, '_')}`,
+    `[SYS_LOG]: active_objectives_${prioritySteps.length}`,
+    `[SYS_LOG]: sync_mode_${syncMode} // completion_${completion}%`,
+    `[SYS_LOG]: support_steps_${nextNonRaidSteps.length}`,
+  ];
 
   return (
     <>
@@ -44,28 +47,28 @@ export function PriorityDeploymentView({
           <div className="panel__header">
             <div>
               <p className="panel__eyebrow">CURRENT DIRECTIVE</p>
-              <h1>{activeTask ? activeTask.map.toUpperCase() : 'NO ACTIVE MAP'}</h1>
-              <p className="panel__subhead">{activeTask ? toDirectiveSubtitle(activeTask) : 'Awaiting route intel'}</p>
+              <h1>{priorityMap.toUpperCase()}</h1>
+              <p className="panel__subhead">{leadStep ? toDirectiveSubtitle(leadStep) : 'Awaiting raid-map objective'}</p>
             </div>
-            <div className="directive-id">ID: {activeTask ? `SV-${String(activeTask.sort_order).padStart(4, '0')}` : 'SV-0000'}</div>
+            <div className="directive-id">ID: {leadStep ? `SV-${String(leadStep.sort_order).padStart(4, '0')}` : 'SV-0000'}</div>
           </div>
 
           <ul className="objective-list">
-            {sharedTasks.map((task) => {
-              const checked = task.progress.status === 'done';
+            {prioritySteps.map((step) => {
+              const checked = step.progress.status === 'done';
               return (
-                <li key={task.id} className={`objective-item${checked ? ' is-done' : ''}`}>
+                <li key={step.id} className={`objective-item${checked ? ' is-done' : ''}`}>
                   <button
                     type="button"
-                    className={`objective-checkbox status-${task.progress.status}`}
-                    onClick={() => void setStatus(task.id, checked ? 'not_started' : 'done')}
-                    aria-label={`Mark ${task.title} ${checked ? 'not complete' : 'complete'}`}
+                    className={`objective-checkbox status-${step.progress.status}`}
+                    onClick={() => void setStatus(step.id, checked ? 'not_started' : 'done')}
+                    aria-label={`Mark ${step.title} ${checked ? 'not complete' : 'complete'}`}
                   >
                     {checked ? '✓' : ''}
                   </button>
                   <div>
-                    <p>{task.title}</p>
-                    <span>{statusLabel[task.progress.status]} · {task.progress.percent_complete}%</span>
+                    <p>{step.title}</p>
+                    <span>{step.quest.title} · {statusLabel[step.progress.status]}</span>
                   </div>
                 </li>
               );
@@ -94,9 +97,7 @@ export function PriorityDeploymentView({
           </article>
 
           <article className="panel panel--logs">
-            {systemLogs.map((entry) => (
-              <p key={entry}>{entry}</p>
-            ))}
+            {systemLogs.map((entry) => <p key={entry}>{entry}</p>)}
           </article>
         </aside>
 
@@ -137,22 +138,53 @@ export function PriorityDeploymentView({
               </div>
             ))}
           </div>
+          <div className="support-queue">
+            <p className="meta-label">OUT OF RAID SUPPORT</p>
+            {nextNonRaidSteps.length === 0 ? (
+              <p className="empty-state">No trader, hideout, or wait-gated blockers are active right now.</p>
+            ) : (
+              nextNonRaidSteps.map((step) => (
+                <div key={step.id} className="support-queue__item">
+                  <strong>{step.map}</strong>
+                  <span>{step.quest.title} · {step.title}</span>
+                </div>
+              ))
+            )}
+          </div>
         </article>
       </section>
 
       <section className="details-section">
         <div className="section-heading">
           <h2>PRIORITY DEPLOYMENT</h2>
-          <p>{sharedTasks.length} tracked objectives</p>
+          <p>{prioritySteps.length} active steps on {priorityMap}</p>
+        </div>
+        <div className="priority-summary-grid">
+          <article className="panel analysis-panel">
+            <div className="section-heading section-heading--compact">
+              <h2>MAP STACK RANKING</h2>
+              <p>Active raid steps by map</p>
+            </div>
+            <div className="map-breakdown-list">
+              {activeMapBreakdown.map(([map, count]) => (
+                <div key={map} className="metric-row">
+                  <div>
+                    <strong>{map}</strong>
+                    <p>{count} active storyline steps</p>
+                  </div>
+                  <span>{count}</span>
+                </div>
+              ))}
+            </div>
+          </article>
         </div>
         <div className="task-grid">
-          {sharedTasks.map((task) => (
+          {prioritySteps.map((step) => (
             <TaskCard
-              key={task.id}
-              task={task}
-              onStatusChange={(taskId, status) => void setStatus(taskId, status)}
-              onPercentChange={(taskId, percent) => void updateTask(taskId, { percent_complete: percent })}
-              onNoteChange={(taskId, note) => void updateTask(taskId, { current_note: note, status: 'in_progress' })}
+              key={step.id}
+              step={step}
+              onStatusChange={(stepId, status) => void setStatus(stepId, status)}
+              onNoteChange={(stepId, note) => void updateStep(stepId, { current_note: note, status: 'in_progress' })}
             />
           ))}
         </div>

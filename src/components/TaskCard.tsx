@@ -1,37 +1,30 @@
 import type { ChangeEvent } from 'react';
-import type { SharedTaskView, TaskStatus } from '../types';
+import type { StepStatus, StepView } from '../types';
+import { statusLabel, stepTypeLabel } from './dashboard/dashboardData';
 
-const statusOptions: TaskStatus[] = ['not_started', 'in_progress', 'blocked', 'done'];
+const statusOptions: StepStatus[] = ['not_started', 'in_progress', 'blocked', 'done'];
 
 interface TaskCardProps {
-  task: SharedTaskView;
-  onStatusChange: (taskId: string, status: TaskStatus) => void;
-  onPercentChange: (taskId: string, percent: number) => void;
-  onNoteChange: (taskId: string, note: string) => void;
+  step: StepView;
+  onStatusChange: (stepId: string, status: StepStatus) => void;
+  onNoteChange: (stepId: string, note: string) => void;
 }
 
-const statusLabel: Record<TaskStatus, string> = {
-  not_started: 'Pending',
-  in_progress: 'Tracking',
-  blocked: 'Blocked',
-  done: 'Complete',
-};
-
-export function TaskCard({ task, onStatusChange, onPercentChange, onNoteChange }: TaskCardProps) {
-  const handlePercent = (event: ChangeEvent<HTMLInputElement>) => {
-    onPercentChange(task.id, Number(event.target.value));
+export function TaskCard({ step, onStatusChange, onNoteChange }: TaskCardProps) {
+  const handleNote = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    onNoteChange(step.id, event.target.value);
   };
 
   return (
-    <article className="task-card">
+    <article className={`task-card${step.isActive ? ' task-card--active' : ''}`}>
       <div className="task-card__header">
         <div>
-          <p className="task-card__eyebrow">{task.storyline} // {task.map}</p>
-          <h3>{task.sort_order}. {task.title}</h3>
+          <p className="task-card__eyebrow">{step.quest.title} // {step.map}</p>
+          <h3>{step.sort_order}. {step.title}</h3>
         </div>
         <label className="task-card__select">
           <span className="meta-label">STATUS</span>
-          <select value={task.progress.status} onChange={(event) => onStatusChange(task.id, event.target.value as TaskStatus)}>
+          <select value={step.progress.status} onChange={(event) => onStatusChange(step.id, event.target.value as StepStatus)}>
             {statusOptions.map((status) => (
               <option key={status} value={status}>
                 {statusLabel[status]}
@@ -41,39 +34,34 @@ export function TaskCard({ task, onStatusChange, onPercentChange, onNoteChange }
         </label>
       </div>
 
-      <p className="task-card__description">{task.description}</p>
+      <p className="task-card__description">{step.details}</p>
 
       <dl className="task-card__meta">
         <div>
-          <dt>Requirements</dt>
-          <dd>{task.requirements.join(', ')}</dd>
+          <dt>Step type</dt>
+          <dd>{stepTypeLabel[step.step_type]}</dd>
         </div>
         <div>
-          <dt>Depends on</dt>
-          <dd>{task.dependencies_json.length > 0 ? task.dependencies_json.join(', ') : 'None'}</dd>
+          <dt>Current state</dt>
+          <dd>{statusLabel[step.progress.status]}</dd>
         </div>
         <div>
-          <dt>Evidence</dt>
-          <dd>{task.major_evidence}</dd>
+          <dt>Priority status</dt>
+          <dd>{step.isActive ? 'Active now' : step.isComplete ? 'Cleared' : 'Queued'}</dd>
         </div>
       </dl>
-
-      <label className="task-card__range">
-        <span>Completion: {task.progress.percent_complete}%</span>
-        <input type="range" min="0" max="100" step="5" value={task.progress.percent_complete} onChange={handlePercent} />
-      </label>
 
       <label className="task-card__note">
         <span>Field note</span>
         <textarea
           rows={3}
-          value={task.progress.current_note}
-          onChange={(event) => onNoteChange(task.id, event.target.value)}
-          placeholder="Log the current state of this objective..."
+          value={step.progress.current_note}
+          onChange={handleNote}
+          placeholder="Log the current state of this step..."
         />
       </label>
 
-      <p className="task-card__updated">Updated {new Date(task.progress.updated_at).toLocaleString()}</p>
+      <p className="task-card__updated">Updated {new Date(step.progress.updated_at).toLocaleString()}</p>
     </article>
   );
 }

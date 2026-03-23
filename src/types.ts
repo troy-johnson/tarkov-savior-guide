@@ -1,15 +1,24 @@
-export type TaskStatus = 'not_started' | 'in_progress' | 'blocked' | 'done';
+export type StepStatus = 'not_started' | 'in_progress' | 'blocked' | 'done';
+export type StepType = 'raid' | 'trader' | 'hideout' | 'handover' | 'wait' | 'intel';
 
-export interface TaskDefinition {
+export interface StoryQuestDefinition {
   id: string;
   title: string;
   storyline: string;
   sort_order: number;
+  summary: string;
+  source_urls: string[];
+}
+
+export interface QuestStepDefinition {
+  id: string;
+  quest_id: string;
+  sort_order: number;
+  title: string;
+  details: string;
+  step_type: StepType;
   map: string;
-  description: string;
-  requirements: string[];
-  dependencies_json: string[];
-  major_evidence: string;
+  is_required: boolean;
 }
 
 export interface RunRecord {
@@ -18,11 +27,10 @@ export interface RunRecord {
   created_at: string;
 }
 
-export interface TaskProgressRecord {
+export interface StepProgressRecord {
   run_id: string;
-  task_id: string;
-  status: TaskStatus;
-  percent_complete: number;
+  step_id: string;
+  status: StepStatus;
   current_note: string;
   updated_at: string;
 }
@@ -47,6 +55,17 @@ export interface BossIntelRecord {
   updated_at: string;
 }
 
-export interface SharedTaskView extends TaskDefinition {
-  progress: TaskProgressRecord;
+export interface StoryQuestView extends StoryQuestDefinition {
+  steps: StepView[];
+  activeSteps: StepView[];
+  completedSteps: number;
+  requiredSteps: number;
+  isComplete: boolean;
+}
+
+export interface StepView extends QuestStepDefinition {
+  quest: StoryQuestDefinition;
+  progress: StepProgressRecord;
+  isActive: boolean;
+  isComplete: boolean;
 }
