@@ -143,12 +143,97 @@ export const seedQuestSteps: QuestStepDefinition[] = [
   step('batya', 10, 'Locate traces of traitors', 'Lighthouse', 'raid', 'Locate traces of traitors at the BEAR camp.'),
   step('batya', 11, 'Investigate Cultist markings', 'Shoreline / Woods', 'raid', 'Investigate the Cultist markings at the marked circles.'),
 
-  step('blue-fire', 1, 'Locate and read the EMERCOM leaflet', 'Woods / Interchange', 'intel', 'Locate and read the EMERCOM leaflet.'),
-  step('blue-fire', 2, 'Obtain the device fragment', 'Streets of Tarkov', 'raid', 'Obtain the device fragment from LexOs or Chekannaya 13.'),
-  step('blue-fire', 3, 'Plant the hacking device', 'The Lab', 'raid', 'Plant the hacking device in the server room.'),
-  step('blue-fire', 4, 'Search for leads on Item 1156', 'Ground Zero / Lighthouse', 'raid', 'Search for leads on Item 1156 in the TerraGroup office or Chalet.'),
-  step('blue-fire', 5, 'Investigate the Rus Post office', 'Streets of Tarkov', 'raid', 'Investigate the Rus Post office.'),
-  step('blue-fire', 6, 'Retrieve the blueprints from the Rus Post van', 'Streets of Tarkov', 'intel', 'Locate the Rus Post van and retrieve the blueprints.'),
+  {
+    ...step('blue-fire', 1, 'Talk to Mechanic about the EMP blast', 'Mechanic', 'trader', 'Talk to Mechanic about the EMP blast.'),
+  },
+  {
+    ...step('blue-fire', 2, 'Gain access to Mechanic', 'Mechanic', 'trader', 'Optional: gain access to Mechanic.'),
+    is_required: false,
+  },
+  {
+    ...step(
+      'blue-fire',
+      3,
+      'Locate and obtain the device fragment',
+      'Streets of Tarkov',
+      'raid',
+      'Locate and obtain the unknown device fragment.',
+    ),
+    required_items: ['Car dealership closed section key', 'Mysterious room marked key'],
+    items_to_obtain: ['Unknown device fragment'],
+  },
+  {
+    ...step(
+      'blue-fire',
+      4,
+      'Hand over the device fragment to Mechanic',
+      'Mechanic',
+      'handover',
+      'Hand over the device fragment to Mechanic.',
+    ),
+  },
+  {
+    ...step(
+      'blue-fire',
+      5,
+      'Plant the hacking device in the server room in The Lab',
+      'The Lab',
+      'raid',
+      'Plant the local network hacking device in the server room in The Lab.',
+    ),
+    required_items: ['Local network hacking device'],
+  },
+  {
+    ...step('blue-fire', 6, 'Talk to Mechanic', 'Mechanic', 'trader', 'Talk to Mechanic.'),
+  },
+  {
+    ...step(
+      'blue-fire',
+      7,
+      'Keep the fragment of Item 1156 for yourself',
+      'Mechanic',
+      'trader',
+      'Keep the fragment of Item 1156 for yourself.',
+    ),
+  },
+  {
+    ...step(
+      'blue-fire',
+      8,
+      'Find a lead on Item 1156',
+      'Ground Zero / Lighthouse / The Lab',
+      'intel',
+      'Find a lead on Item 1156.',
+    ),
+    required_items: ['Note mentioning Item #1156'],
+  },
+  {
+    ...step(
+      'blue-fire',
+      9,
+      'Investigate the Rus Post office',
+      'Streets of Tarkov',
+      'raid',
+      'Investigate the Rus Post office.',
+    ),
+    required_items: ['Audio recorder'],
+    items_to_obtain: ['Rus Post audio tape 11.05 / 001', 'Rus Post audio tape 11.05 / 002', 'Rus Post audio tape 11.05 / 003'],
+  },
+  {
+    ...step('blue-fire', 10, 'Locate the Rus Post car', 'Streets of Tarkov', 'raid', 'Locate the Rus Post car.'),
+  },
+  {
+    ...step(
+      'blue-fire',
+      11,
+      'Obtain the blueprint for Item 1156',
+      'Streets of Tarkov',
+      'intel',
+      'Obtain the blueprint for Item 1156 from the Rus Post car.',
+    ),
+    required_items: ['Rus Post car key'],
+    items_to_obtain: ['Item #1156 specification'],
+  },
 
   step('the-labyrinth', 1, 'Locate the transit entrance', 'Shoreline', 'raid', 'Locate the transit entrance in the West Wing basement.'),
   step('the-labyrinth', 2, 'Enter The Labyrinth facility', 'The Labyrinth', 'raid', 'Enter The Labyrinth facility. Requires the Labrys Keycard.'),

@@ -923,6 +923,22 @@ textarea {
   color: var(--text-faint);
 }
 
+.directive-setup {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.directive-setup__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.directive-setup__summary {
+  color: #f3dcc7;
+  line-height: 1.6;
+}
+
 .map-canvas {
   position: relative;
   min-height: 390px;
@@ -965,11 +981,37 @@ textarea {
 
 .alert-card,
 .metric-row,
+.directive-setup__item,
 .support-queue__item,
 .quest-step-row {
   padding: 1rem;
   border: 1px solid rgba(255,255,255,0.06);
   background: rgba(0,0,0,0.18);
+}
+
+.directive-setup__item,
+.support-queue__item {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.directive-setup__item strong,
+.support-queue__item strong {
+  color: #f5f0de;
+}
+
+.metric-row--button {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.metric-row--button.is-selected {
+  border-color: rgba(255, 184, 77, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 184, 77, 0.18) inset;
 }
 
 .alert-pill,
@@ -1002,6 +1044,11 @@ textarea {
 
 .gear-item--sage {
   border-left-color: var(--sage);
+}
+
+.panel--support h2 {
+  font-size: 1.6rem;
+  margin: 0.75rem 0 1rem;
 }
 
 .details-section,
@@ -1054,7 +1101,8 @@ textarea {
 .quest-info-card__description,
 .source-list a,
 .quest-step-row p,
-.support-queue__item span {
+.support-queue__item span,
+.directive-setup__item span {
   color: var(--text-dim);
 }
 
