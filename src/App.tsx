@@ -155,6 +155,7 @@ function App() {
         <PriorityDeploymentView
           activeMapBreakdown={activeMapBreakdown}
           bossIntel={selectedBossIntel}
+          completion={completion}
           loading={isSyncBusy}
           mapTelemetry={selectedMapTelemetry}
           nextNonRaidSteps={nextNonRaidSteps}
@@ -166,6 +167,7 @@ function App() {
           selectedPriorityMap={displayedPriorityMap}
           setStatus={setStatus}
           setSelectedPriorityMap={setSelectedPriorityMap}
+          syncMode={syncMode}
           updateStep={updateStep}
         />
       ) : null}

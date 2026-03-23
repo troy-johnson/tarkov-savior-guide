@@ -16,6 +16,7 @@ interface PriorityDeploymentViewProps {
   selectedPriorityMap: string;
   setStatus: (stepId: string, status: StepStatus) => Promise<void>;
   setSelectedPriorityMap: (map: string) => void;
+  syncMode: 'supabase' | 'local-seed';
   updateStep: (stepId: string, changes: Partial<Pick<StepView['progress'], 'status' | 'current_note'>>) => Promise<void>;
 }
 
@@ -33,12 +34,20 @@ export function PriorityDeploymentView({
   selectedPriorityMap,
   setStatus,
   setSelectedPriorityMap,
+  syncMode,
   updateStep,
 }: PriorityDeploymentViewProps) {
   const leadStep = prioritySteps[0];
   const gearList = leadStep ? toRequiredGearList([leadStep]) : [];
   const selectedMapSummary = activeMapBreakdown.find(({ map }) => map === selectedPriorityMap);
   const projectedStackCount = selectedMapSummary?.potentialCount ?? prioritySteps.length;
+  const systemLogs = [
+    `[SYS_LOG]: priority_map_${priorityMap.toLowerCase().replace(/\s+/g, '_')}`,
+    `[SYS_LOG]: active_objectives_${prioritySteps.length}`,
+    `[SYS_LOG]: sync_mode_${syncMode} // completion_${completion}%`,
+    `[SYS_LOG]: support_steps_${nextNonRaidSteps.length}`,
+    `[SYS_LOG]: setup_chain_${prioritySetupSteps.length}`,
+  ];
 
   return (
     <>
@@ -175,6 +184,19 @@ export function PriorityDeploymentView({
                 <strong>{item.quantity}</strong>
               </div>
             ))}
+          </div>
+          <div className="support-queue">
+            <p className="meta-label">NON-RAID STEPS</p>
+            {nextNonRaidSteps.length === 0 ? (
+              <p className="empty-state">No trader, hideout, or wait-gated blockers are active right now.</p>
+            ) : (
+              nextNonRaidSteps.map((step) => (
+                <div key={step.id} className="support-queue__item">
+                  <strong>{step.map}</strong>
+                  <span>{step.quest.title} · {step.title}</span>
+                </div>
+              ))
+            )}
           </div>
         </article>
       </section>
