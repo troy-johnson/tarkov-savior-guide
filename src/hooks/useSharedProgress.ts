@@ -16,6 +16,7 @@ import type {
 
 const STORAGE_KEY = 'tarkov-savior-guide-run';
 const STORAGE_PROGRESS_PREFIX = 'tarkov-savior-guide-progress:';
+const STORAGE_PROGRESS_META_PREFIX = 'tarkov-savior-guide-progress-meta:';
 const DEFAULT_RUN_ID = 'shared-savior-run';
 const DEFAULT_RUN_NAME = 'Shared Savior Run';
 const DEFAULT_MAP = 'Ground Zero';
@@ -35,8 +36,6 @@ const writeLocalRunId = (runId: string) => {
   }
 };
 
-const getLocalProgressKey = (runId: string) => `${STORAGE_PROGRESS_PREFIX}${runId}`;
-
 function readLocalProgress(runId: string): StepProgressRecord[] {
   if (typeof window === 'undefined') {
     return [];
@@ -48,19 +47,97 @@ function readLocalProgress(runId: string): StepProgressRecord[] {
   }
 
   try {
-    const parsed = JSON.parse(raw);
+    const parsed: Record<string, unknown> = JSON.parse(raw) as Record<string, unknown>;
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
-function writeLocalProgress(runId: string, progressByStep: Record<string, StepProgressRecord>) {
+type LocalProgressMetadata = {
+  last_local_write_at: string;
+  unsynced: boolean;
+  dirty_step_ids?: string[];
+};
+
+const getLocalProgressKey = (runId: string) => `${STORAGE_PROGRESS_PREFIX}${runId}`;
+const getLocalProgressMetadataKey = (runId: string) => `${STORAGE_PROGRESS_META_PREFIX}${runId}`;
+
+function readLocalProgressMetadata(runId: string): LocalProgressMetadata | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const raw = window.localStorage.getItem(getLocalProgressMetadataKey(runId));
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') {
+      return null;
+    }
+
+    return {
+      last_local_write_at:
+        typeof parsed.last_local_write_at === 'string' ? parsed.last_local_write_at : new Date().toISOString(),
+      unsynced: parsed.unsynced === true,
+      dirty_step_ids: Array.isArray(parsed.dirty_step_ids)
+        ? (parsed.dirty_step_ids as unknown[]).filter((stepId): stepId is string => typeof stepId === 'string')
+        : undefined,
+    } satisfies LocalProgressMetadata;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalProgressMetadata(runId: string, metadata: LocalProgressMetadata) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(getLocalProgressMetadataKey(runId), JSON.stringify(metadata));
+}
+
+function clearLocalProgressMetadata(runId: string) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.removeItem(getLocalProgressMetadataKey(runId));
+}
+
+function writeLocalProgress(
+  runId: string,
+  progressByStep: Record<string, StepProgressRecord>,
+  options?: { unsynced?: boolean; dirtyStepIds?: string[] },
+) {
   if (typeof window === 'undefined') {
     return;
   }
 
   window.localStorage.setItem(getLocalProgressKey(runId), JSON.stringify(Object.values(progressByStep)));
+
+  const existingMetadata = readLocalProgressMetadata(runId);
+  const dirtyStepIds = options?.unsynced
+    ? [...new Set([...(existingMetadata?.dirty_step_ids ?? []), ...(options.dirtyStepIds ?? [])])]
+    : options?.dirtyStepIds?.length
+      ? [...new Set(options.dirtyStepIds)]
+      : undefined;
+
+  const nextMetadata: LocalProgressMetadata = {
+    last_local_write_at: new Date().toISOString(),
+    unsynced: options?.unsynced ?? false,
+    dirty_step_ids: dirtyStepIds?.length ? dirtyStepIds : undefined,
+  };
+
+  if (!nextMetadata.unsynced && !nextMetadata.dirty_step_ids?.length) {
+    clearLocalProgressMetadata(runId);
+    return;
+  }
+
+  writeLocalProgressMetadata(runId, nextMetadata);
 }
 
 const mapTelemetrySeedRows = Object.values(seedMapTelemetry);
@@ -160,6 +237,77 @@ export function useSharedProgress() {
       error: details?.error ?? details?.message ?? null,
     });
   }, []);
+
+  const reconcileLocalProgress = useCallback(async (runId: string, remoteRows: StepProgressRecord[]) => {
+    if (!client) {
+      return remoteRows;
+    }
+
+    const localMetadata = readLocalProgressMetadata(runId);
+    if (!localMetadata?.unsynced) {
+      return remoteRows;
+    }
+
+    const localRows = readLocalProgress(runId);
+    if (localRows.length === 0) {
+      clearLocalProgressMetadata(runId);
+      return remoteRows;
+    }
+
+    const remoteByStepId = Object.fromEntries(remoteRows.map((row) => [row.step_id, row]));
+    const dirtyStepIds = localMetadata.dirty_step_ids?.length
+      ? new Set(localMetadata.dirty_step_ids)
+      : new Set(localRows.map((row) => row.step_id));
+
+    const rowsToReplay = localRows.filter((localRow) => {
+      if (localRow.run_id !== runId || !dirtyStepIds.has(localRow.step_id)) {
+        return false;
+      }
+
+      const remoteRow = remoteByStepId[localRow.step_id];
+      if (!remoteRow) {
+        return true;
+      }
+
+      return new Date(localRow.updated_at).getTime() > new Date(remoteRow.updated_at).getTime();
+    });
+
+    if (rowsToReplay.length === 0) {
+      clearLocalProgressMetadata(runId);
+      return remoteRows;
+    }
+
+    for (const row of rowsToReplay) {
+      console.log('[shared-progress]', {
+        runId,
+        operation: 'load:reconcile-local-progress:replay-row',
+        stepId: row.step_id,
+        updatedAt: row.updated_at,
+      });
+    }
+
+    const { data: reconciledRowsRaw, error: reconcileError } = await client
+      .from('step_progress')
+      .upsert(rowsToReplay as never, { onConflict: 'run_id,step_id' })
+      .select();
+
+    if (reconcileError) {
+      logRemoteFailure('load:reconcile-local-progress:error', { error: reconcileError });
+      throw reconcileError;
+    }
+
+    clearLocalProgressMetadata(runId);
+
+    const reconciledRows = (reconciledRowsRaw ?? rowsToReplay) as StepProgressRecord[];
+    const mergedByStepId: Record<string, StepProgressRecord> = Object.fromEntries(remoteRows.map((row) => [row.step_id, row]));
+    for (const row of reconciledRows) {
+      mergedByStepId[row.step_id] = row;
+    }
+
+    const mergedRows = Object.values(mergedByStepId).filter((row): row is StepProgressRecord => Boolean(row));
+    writeLocalProgress(runId, Object.fromEntries(mergedRows.map((row) => [row.step_id, row])));
+    return mergedRows;
+  }, [client, logRemoteFailure]);
 
   const hydrateDefaults = useCallback((stepList: QuestStepDefinition[], runId: string, rows: StepProgressRecord[] = []) => {
     const hydrated = Object.fromEntries(
@@ -303,7 +451,8 @@ export function useSharedProgress() {
           }
         }
 
-        hydrateDefaults(resolvedSteps, run.id, progressRows ?? []);
+        const reconciledProgressRows = await reconcileLocalProgress(run.id, progressRows ?? []);
+        hydrateDefaults(resolvedSteps, run.id, reconciledProgressRows);
         setSyncMode('supabase');
         setLastSyncedAt(new Date().toISOString());
       } catch (loadError) {
@@ -331,7 +480,7 @@ export function useSharedProgress() {
     return () => {
       active = false;
     };
-  }, [client, hydrateDefaults, reloadToken, run.id, run.name]);
+  }, [client, hydrateDefaults, reconcileLocalProgress, reloadToken, run.id, run.name]);
 
   useEffect(() => {
     if (!client) {
@@ -395,7 +544,7 @@ export function useSharedProgress() {
 
       progressByStepRef.current = nextProgressByStep;
       setProgressByStep(nextProgressByStep);
-      writeLocalProgress(run.id, nextProgressByStep);
+      writeLocalProgress(run.id, nextProgressByStep, { unsynced: true, dirtyStepIds: [stepId] });
 
       if (!client) {
         logRemoteFailure('updateStep:client-null', { message: 'Supabase client unavailable' });
