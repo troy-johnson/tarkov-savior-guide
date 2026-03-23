@@ -21,6 +21,8 @@ const DEFAULT_RUN_ID = 'shared-savior-run';
 const DEFAULT_RUN_NAME = 'Shared Savior Run';
 const DEFAULT_MAP = 'Ground Zero';
 
+type RemoteHealth = 'connected' | 'degraded' | 'offline';
+
 const createDefaultProgress = (runId: string, stepId: string): StepProgressRecord => ({
   run_id: runId,
   step_id: stepId,
@@ -211,6 +213,7 @@ export function useSharedProgress() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [syncMode, setSyncMode] = useState<'supabase' | 'local-seed'>(isSupabaseConfigured ? 'supabase' : 'local-seed');
+  const [remoteHealth, setRemoteHealth] = useState<RemoteHealth>(client ? 'connected' : 'offline');
   const [error, setError] = useState<string | null>(null);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
@@ -321,6 +324,17 @@ export function useSharedProgress() {
     setProgressByStep(hydrated);
   }, []);
 
+  const logLocalFallback = useCallback((operation: string, reason: string, details?: { error?: unknown }) => {
+    console.warn('[shared-progress:fallback]', {
+      runId: runIdRef.current,
+      operation,
+      reason,
+      syncMode: syncModeRef.current,
+      remoteHealth,
+      error: details?.error ?? null,
+    });
+  }, [remoteHealth]);
+
   const ensureRemoteRun = useCallback(async () => {
     // `runs` is only the parent identity/metadata record for a shared run.
     // Canonical per-step checklist state lives in `step_progress`.
@@ -360,6 +374,7 @@ export function useSharedProgress() {
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
         setSyncMode('local-seed');
+        setRemoteHealth('offline');
         setLastSyncedAt(new Date().toISOString());
         setRefreshing(false);
         setLoading(false);
@@ -454,6 +469,7 @@ export function useSharedProgress() {
         const reconciledProgressRows = await reconcileLocalProgress(run.id, progressRows ?? []);
         hydrateDefaults(resolvedSteps, run.id, reconciledProgressRows);
         setSyncMode('supabase');
+        setRemoteHealth('connected');
         setLastSyncedAt(new Date().toISOString());
       } catch (loadError) {
         if (!active) {
@@ -467,6 +483,7 @@ export function useSharedProgress() {
         setBossIntelByMap(seedBossIntelByMap);
         hydrateDefaults(seedQuestSteps, run.id, readLocalProgress(run.id));
         setSyncMode('local-seed');
+        setRemoteHealth(client ? 'degraded' : 'offline');
         setLastSyncedAt(new Date().toISOString());
       } finally {
         if (active) {
@@ -544,10 +561,23 @@ export function useSharedProgress() {
 
       progressByStepRef.current = nextProgressByStep;
       setProgressByStep(nextProgressByStep);
-      writeLocalProgress(run.id, nextProgressByStep, { unsynced: true, dirtyStepIds: [stepId] });
+
+      const persistLocalFallback = (reason: string, details?: { error?: unknown }) => {
+        logLocalFallback('updateStep', reason, details);
+        writeLocalProgress(run.id, nextProgressByStep);
+      };
 
       if (!client) {
         logRemoteFailure('updateStep:client-null', { message: 'Supabase client unavailable' });
+        setRemoteHealth('offline');
+        setSyncMode('local-seed');
+        persistLocalFallback('Supabase client unavailable');
+        return;
+      }
+
+      if (remoteHealth !== 'connected') {
+        setSyncMode('local-seed');
+        persistLocalFallback(`Remote health is ${remoteHealth}`);
         return;
       }
 
@@ -556,8 +586,10 @@ export function useSharedProgress() {
         await ensureRemoteRun();
       } catch (runError) {
         logRemoteFailure('updateStep:ensureRemoteRun:local-seed-fallback', { error: runError });
+        setRemoteHealth('degraded');
         setSyncMode('local-seed');
         setError(runError instanceof Error ? runError.message : 'Unable to prepare run for sync');
+        persistLocalFallback('Failed to ensure remote run', { error: runError });
         return;
       }
 
@@ -570,8 +602,10 @@ export function useSharedProgress() {
 
       if (upsertError) {
         logRemoteFailure('updateStep:upsert-step_progress:local-seed-fallback', { error: upsertError });
+        setRemoteHealth('degraded');
         setSyncMode('local-seed');
         setError(upsertError.message);
+        persistLocalFallback('Remote step_progress upsert failed', { error: upsertError });
         return;
       }
 
@@ -581,12 +615,12 @@ export function useSharedProgress() {
         const savedProgressByStep = { ...nextProgressByStep, [stepId]: savedProgress };
         progressByStepRef.current = savedProgressByStep;
         setProgressByStep(savedProgressByStep);
-        writeLocalProgress(run.id, savedProgressByStep);
+        setRemoteHealth('connected');
         setSyncMode('supabase');
         setLastSyncedAt(new Date().toISOString());
       }
     },
-    [client, ensureRemoteRun, run.id],
+    [client, ensureRemoteRun, logLocalFallback, remoteHealth, run.id],
   );
 
   const setStatus = useCallback(async (stepId: string, status: StepStatus) => {
@@ -654,6 +688,7 @@ export function useSharedProgress() {
     selectRun,
     setStatus,
     storyQuests,
+    remoteHealth,
     syncMode,
     updateStep,
   };

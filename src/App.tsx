@@ -20,6 +20,7 @@ function App() {
     refresh,
     refreshing,
     run,
+    remoteHealth,
     selectRun,
     setStatus,
     storyQuests,
@@ -50,6 +51,13 @@ function App() {
   const activeTabMeta = useMemo(() => tabMeta[activeTab], [activeTab]);
   const requiredSteps = storyQuests.reduce((sum, quest) => sum + quest.requiredSteps, 0);
   const isSyncBusy = loading || refreshing;
+  const syncBannerText = error
+    ? `Database unavailable, using local fallback: ${error}`
+    : remoteHealth === 'connected'
+      ? 'Database connected, syncing normally.'
+      : remoteHealth === 'degraded'
+        ? 'Database unavailable, using local fallback.'
+        : 'Database unavailable, using local fallback.';
 
   return (
     <main className="dashboard-shell">
@@ -76,10 +84,9 @@ function App() {
         </button>
       </header>
 
-      {(error || isSyncBusy) ? (
-        <section className={`status-banner${error ? ' status-banner--error' : ''}`}>
+      <section className={`status-banner${error || remoteHealth !== 'connected' ? ' status-banner--error' : ''}`}>
           <div className="status-banner__content">
-            <span>{error ? `Realtime sync fallback: ${error}` : refreshing ? 'Refreshing shared progress…' : 'Loading shared progress…'}</span>
+            <span>{isSyncBusy ? (refreshing ? 'Refreshing shared progress…' : 'Loading shared progress…') : syncBannerText}</span>
             {isSyncBusy ? (
               <div className="status-banner__progress" aria-label="Shared progress is loading" aria-live="polite">
                 <div className="status-banner__progress-track" aria-hidden="true">
@@ -89,9 +96,8 @@ function App() {
               </div>
             ) : null}
           </div>
-          <span>{syncMode.toUpperCase()}</span>
+          <span>{remoteHealth === 'connected' ? 'SYNC OK' : 'LOCAL FALLBACK'}</span>
         </section>
-      ) : null}
 
       <section className="control-strip">
         <label className="control-card">
