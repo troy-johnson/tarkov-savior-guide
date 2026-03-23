@@ -285,9 +285,21 @@ export function useSharedProgress() {
         return;
       }
 
-      const { error: upsertError } = await client.from('step_progress').upsert(next as never);
+      setError(null);
+      const { data: savedProgress, error: upsertError } = await client
+        .from('step_progress')
+        .upsert(next as never, { onConflict: 'run_id,step_id' })
+        .select()
+        .single();
+
       if (upsertError) {
+        setProgressByStep((existing) => ({ ...existing, [stepId]: current }));
         setError(upsertError.message);
+        return;
+      }
+
+      if (savedProgress) {
+        setProgressByStep((existing) => ({ ...existing, [stepId]: savedProgress }));
       }
     },
     [client, progressByStep, run.id],

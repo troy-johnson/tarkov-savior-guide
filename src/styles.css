@@ -1011,6 +1011,82 @@ textarea {
   gap: 1rem;
 }
 
+
+.quest-nav-summary {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: end;
+}
+
+.quest-navigator {
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.quest-navigator__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(280px, 1fr) minmax(0, 180px);
+  gap: 1rem;
+  align-items: end;
+}
+
+.quest-navigator__button {
+  margin-top: 0;
+}
+
+.quest-navigator__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.quest-navigator__picker {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.quest-navigator__rail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.quest-navigator__item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+
+.quest-navigator__item.is-selected {
+  border-color: rgba(255, 184, 77, 0.45);
+  background: rgba(255, 184, 77, 0.08);
+  box-shadow: 0 0 0 1px rgba(255, 184, 77, 0.14) inset;
+}
+
+.quest-navigator__item-order {
+  color: var(--accent);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  letter-spacing: 0.14em;
+}
+
+.quest-navigator__item-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.quest-navigator__item-copy span {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+}
+
+.quest-group-card--focused {
+  min-height: 100%;
+}
+
 .source-list a {
   word-break: break-all;
 }
@@ -1073,7 +1149,8 @@ textarea {
   .intel-row,
   .alert-card,
   .section-heading,
-  .quest-group-card__header {
+  .quest-group-card__header,
+  .quest-navigator__controls {
     grid-template-columns: 1fr;
     display: grid;
   }
