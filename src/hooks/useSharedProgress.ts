@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { seedBossIntelByMap, seedMapTelemetry, realRaidMaps } from '../components/dashboard/dashboardData';
 import { seedQuestSteps, seedStoryQuests } from '../data/tasks';
 import { getSupabaseClient, isSupabaseConfigured, schemaSql } from '../lib/supabase';
@@ -126,6 +126,7 @@ export function useSharedProgress() {
   const [quests, setQuests] = useState<StoryQuestDefinition[]>(seedStoryQuests);
   const [steps, setSteps] = useState<QuestStepDefinition[]>(seedQuestSteps);
   const [progressByStep, setProgressByStep] = useState<Record<string, StepProgressRecord>>({});
+  const progressByStepRef = useRef<Record<string, StepProgressRecord>>({});
   const [mapTelemetryByMap, setMapTelemetryByMap] = useState<Record<string, MapTelemetryRecord>>(seedMapTelemetry);
   const [bossIntelByMap, setBossIntelByMap] = useState<Record<string, BossIntelRecord>>(seedBossIntelByMap);
   const [loading, setLoading] = useState(true);
@@ -136,14 +137,15 @@ export function useSharedProgress() {
   const [reloadToken, setReloadToken] = useState(0);
 
   const hydrateDefaults = useCallback((stepList: QuestStepDefinition[], runId: string, rows: StepProgressRecord[] = []) => {
-    setProgressByStep(
-      Object.fromEntries(
-        stepList.map((step) => {
-          const persisted = rows.find((row) => row.step_id === step.id);
-          return [step.id, persisted ?? createDefaultProgress(runId, step.id)];
-        }),
-      ),
+    const hydrated = Object.fromEntries(
+      stepList.map((step) => {
+        const persisted = rows.find((row) => row.step_id === step.id);
+        return [step.id, persisted ?? createDefaultProgress(runId, step.id)];
+      }),
     );
+
+    progressByStepRef.current = hydrated;
+    setProgressByStep(hydrated);
   }, []);
 
   const ensureRemoteRun = useCallback(async () => {
@@ -227,20 +229,6 @@ export function useSharedProgress() {
           setRun(runRow);
         }
 
-        if ((questRows ?? []).length === 0) {
-          const { error: seedQuestError } = await client.from('story_quests').upsert(seedStoryQuests as never);
-          if (seedQuestError) {
-            throw seedQuestError;
-          }
-        }
-
-        if ((stepRows ?? []).length === 0) {
-          const { error: seedStepError } = await client.from('quest_steps').upsert(seedQuestSteps as never);
-          if (seedStepError) {
-            throw seedStepError;
-          }
-        }
-
         if ((telemetryRows ?? []).length === 0) {
           const { error: telemetryUpsertError } = await client.from('map_telemetry').upsert(mapTelemetrySeedRows as never);
           if (telemetryUpsertError) {
@@ -296,7 +284,12 @@ export function useSharedProgress() {
         if (!next?.step_id) {
           return;
         }
-        setProgressByStep((current) => ({ ...current, [next.step_id]: next }));
+        setProgressByStep((current) => {
+          const updated = { ...current, [next.step_id]: next };
+          progressByStepRef.current = updated;
+          writeLocalProgress(run.id, updated);
+          return updated;
+        });
       })
       .subscribe();
 
@@ -331,10 +324,12 @@ export function useSharedProgress() {
 
   const updateStep = useCallback(
     async (stepId: string, changes: Partial<Pick<StepProgressRecord, 'status' | 'current_note'>>) => {
-      const current = progressByStep[stepId] ?? createDefaultProgress(run.id, stepId);
+      const currentProgressByStep = progressByStepRef.current;
+      const current = currentProgressByStep[stepId] ?? createDefaultProgress(run.id, stepId);
       const next = { ...current, ...changes, updated_at: new Date().toISOString() };
-      const nextProgressByStep = { ...progressByStep, [stepId]: next };
+      const nextProgressByStep = { ...currentProgressByStep, [stepId]: next };
 
+      progressByStepRef.current = nextProgressByStep;
       setProgressByStep(nextProgressByStep);
       writeLocalProgress(run.id, nextProgressByStep);
 
@@ -365,13 +360,14 @@ export function useSharedProgress() {
 
       if (savedProgress) {
         const savedProgressByStep = { ...nextProgressByStep, [stepId]: savedProgress };
+        progressByStepRef.current = savedProgressByStep;
         setProgressByStep(savedProgressByStep);
         writeLocalProgress(run.id, savedProgressByStep);
         setSyncMode('supabase');
         setLastSyncedAt(new Date().toISOString());
       }
     },
-    [client, ensureRemoteRun, progressByStep, run.id],
+    [client, ensureRemoteRun, run.id],
   );
 
   const setStatus = useCallback(async (stepId: string, status: StepStatus) => {
