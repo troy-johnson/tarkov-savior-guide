@@ -15,6 +15,7 @@ import type {
 } from '../types';
 
 const STORAGE_KEY = 'tarkov-savior-guide-run';
+const STORAGE_PROGRESS_PREFIX = 'tarkov-savior-guide-progress:';
 const DEFAULT_RUN_ID = 'shared-savior-run';
 const DEFAULT_RUN_NAME = 'Shared Savior Run';
 const DEFAULT_MAP = 'Ground Zero';
@@ -33,6 +34,34 @@ const writeLocalRunId = (runId: string) => {
     window.localStorage.setItem(STORAGE_KEY, runId);
   }
 };
+
+const getLocalProgressKey = (runId: string) => `${STORAGE_PROGRESS_PREFIX}${runId}`;
+
+function readLocalProgress(runId: string): StepProgressRecord[] {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  const raw = window.localStorage.getItem(getLocalProgressKey(runId));
+  if (!raw) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalProgress(runId: string, progressByStep: Record<string, StepProgressRecord>) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(getLocalProgressKey(runId), JSON.stringify(Object.values(progressByStep)));
+}
 
 const mapTelemetrySeedRows = Object.values(seedMapTelemetry);
 const bossIntelSeedRows = Object.values(seedBossIntelByMap);
@@ -100,8 +129,10 @@ export function useSharedProgress() {
   const [mapTelemetryByMap, setMapTelemetryByMap] = useState<Record<string, MapTelemetryRecord>>(seedMapTelemetry);
   const [bossIntelByMap, setBossIntelByMap] = useState<Record<string, BossIntelRecord>>(seedBossIntelByMap);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [syncMode, setSyncMode] = useState<'supabase' | 'local-seed'>(isSupabaseConfigured ? 'supabase' : 'local-seed');
   const [error, setError] = useState<string | null>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
   const hydrateDefaults = useCallback((stepList: QuestStepDefinition[], runId: string, rows: StepProgressRecord[] = []) => {
@@ -115,6 +146,21 @@ export function useSharedProgress() {
     );
   }, []);
 
+  const ensureRemoteRun = useCallback(async () => {
+    if (!client) {
+      return;
+    }
+
+    const { error: runError } = await client.from('runs').upsert({
+      id: run.id,
+      name: run.name,
+    } as never, { onConflict: 'id' });
+
+    if (runError) {
+      throw runError;
+    }
+  }, [client, run.id, run.name]);
+
   useEffect(() => {
     let active = true;
 
@@ -123,9 +169,15 @@ export function useSharedProgress() {
       setError(null);
 
       if (!client) {
-        hydrateDefaults(seedQuestSteps, run.id);
+        if (!active) {
+          return;
+        }
+        hydrateDefaults(seedQuestSteps, run.id, readLocalProgress(run.id));
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
+        setSyncMode('local-seed');
+        setLastSyncedAt(new Date().toISOString());
+        setRefreshing(false);
         setLoading(false);
         return;
       }
@@ -205,6 +257,7 @@ export function useSharedProgress() {
 
         hydrateDefaults(resolvedSteps, run.id, progressRows ?? []);
         setSyncMode('supabase');
+        setLastSyncedAt(new Date().toISOString());
       } catch (loadError) {
         if (!active) {
           return;
@@ -214,10 +267,12 @@ export function useSharedProgress() {
         setSteps(seedQuestSteps);
         setMapTelemetryByMap(seedMapTelemetry);
         setBossIntelByMap(seedBossIntelByMap);
-        hydrateDefaults(seedQuestSteps, run.id);
+        hydrateDefaults(seedQuestSteps, run.id, readLocalProgress(run.id));
         setSyncMode('local-seed');
+        setLastSyncedAt(new Date().toISOString());
       } finally {
         if (active) {
+          setRefreshing(false);
           setLoading(false);
         }
       }
@@ -278,14 +333,24 @@ export function useSharedProgress() {
     async (stepId: string, changes: Partial<Pick<StepProgressRecord, 'status' | 'current_note'>>) => {
       const current = progressByStep[stepId] ?? createDefaultProgress(run.id, stepId);
       const next = { ...current, ...changes, updated_at: new Date().toISOString() };
+      const nextProgressByStep = { ...progressByStep, [stepId]: next };
 
-      setProgressByStep((existing) => ({ ...existing, [stepId]: next }));
+      setProgressByStep(nextProgressByStep);
+      writeLocalProgress(run.id, nextProgressByStep);
 
       if (!client) {
         return;
       }
 
       setError(null);
+      try {
+        await ensureRemoteRun();
+      } catch (runError) {
+        setSyncMode('local-seed');
+        setError(runError instanceof Error ? runError.message : 'Unable to prepare run for sync');
+        return;
+      }
+
       const { data: savedProgress, error: upsertError } = await client
         .from('step_progress')
         .upsert(next as never, { onConflict: 'run_id,step_id' })
@@ -293,16 +358,20 @@ export function useSharedProgress() {
         .single();
 
       if (upsertError) {
-        setProgressByStep((existing) => ({ ...existing, [stepId]: current }));
+        setSyncMode('local-seed');
         setError(upsertError.message);
         return;
       }
 
       if (savedProgress) {
-        setProgressByStep((existing) => ({ ...existing, [stepId]: savedProgress }));
+        const savedProgressByStep = { ...nextProgressByStep, [stepId]: savedProgress };
+        setProgressByStep(savedProgressByStep);
+        writeLocalProgress(run.id, savedProgressByStep);
+        setSyncMode('supabase');
+        setLastSyncedAt(new Date().toISOString());
       }
     },
-    [client, progressByStep, run.id],
+    [client, ensureRemoteRun, progressByStep, run.id],
   );
 
   const setStatus = useCallback(async (stepId: string, status: StepStatus) => {
@@ -316,6 +385,7 @@ export function useSharedProgress() {
   }, []);
 
   const refresh = useCallback(async () => {
+    setRefreshing(true);
     setReloadToken((current) => current + 1);
   }, []);
 
@@ -356,12 +426,14 @@ export function useSharedProgress() {
     bossIntel,
     completion,
     error,
+    lastSyncedAt,
     loading,
     mapTelemetry,
     nextNonRaidSteps,
     priorityMap,
     prioritySteps,
     refresh,
+    refreshing,
     run,
     schemaSql,
     selectRun,

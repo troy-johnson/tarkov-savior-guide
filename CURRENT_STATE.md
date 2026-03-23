@@ -3,20 +3,24 @@
 ## What is wired up today
 
 ### Shared data flow
-- The app loads task definitions from Supabase `tasks` when available.
-- If the remote `tasks` table is empty or Supabase is unavailable, the UI falls back to local `seedTasks`.
+- The app loads storyline definitions from Supabase `story_quests` and `quest_steps` when available.
+- If those remote tables are empty or Supabase is unavailable, the UI falls back to local seeded quest data.
 - The current run is loaded from `runs` by `run.id`.
-- Task progress is loaded from `task_progress` for the active run.
-- Progress updates are written back to `task_progress` with `upsert`.
-- Realtime subscription is set up for `task_progress` changes on the current run.
+- Step progress is loaded from `step_progress` for the active run.
+- Progress updates are written back to `step_progress` with `upsert`.
+- The app now also snapshots per-run progress into localStorage so raid status and notes still save during local fallback or failed Supabase writes.
+- Realtime subscription is set up for `step_progress` changes on the current run.
 - A manual refresh trigger exists and forces the load effect to run again.
+- Progress controls should stay disabled while the Supabase bootstrap pass is still creating or seeding the backing records for the active run.
+- While that bootstrap work is running, the status banner now shows an animated loading bar and seeding/sync message for the current run.
+- Manual refresh now surfaces visible feedback through a syncing button state, loading banner copy, and a last-sync timestamp in the control strip.
 
 ### User interactions that are real
 - Joining/changing a run ID updates local storage and reloads that run.
 - Marking an objective complete in the directive list updates the underlying task progress.
 - Changing status in a task card or quest detail card updates the underlying task progress.
 - Moving the completion slider in either dashboard editing surface updates the underlying task progress.
-- Editing the field note in either editing surface updates the underlying task progress and sets status to `in_progress`.
+- Editing the field note in either editing surface updates the underlying task progress, sets status to `in_progress`, and persists the change in the current run snapshot even without Supabase.
 - Completion percentage in the dashboard is derived from the live task progress values.
 - Switching tabs changes the rendered dashboard view for `PRIORITY_DEPLOYMENT`, `STORYLINE_PROGRESS`, and `QUEST_INFORMATION`.
 
@@ -68,14 +72,15 @@ Potential next steps:
 
 ### Current tables in use
 - `runs`
-- `tasks`
-- `task_progress`
+- `story_quests`
+- `quest_steps`
+- `step_progress`
 - `map_telemetry`
 - `boss_intel`
 
 ### Current realtime usage
-- Realtime listens to `task_progress`, `map_telemetry`, and `boss_intel`.
-- There is still no realtime feed for `tasks`, storyline summaries, or quest detail activity history.
+- Realtime listens to `step_progress`, `map_telemetry`, and `boss_intel`.
+- There is still no realtime feed for `story_quests`, `quest_steps`, storyline summaries, or quest detail activity history.
 
 ### Data model gaps if we want the wireframe to be fully real
 If we want the dashboard to become fully data-driven, we likely need additional backend structures for some or all of the following:
@@ -92,7 +97,7 @@ If we want the dashboard to become fully data-driven, we likely need additional 
 - Shared run selection
 - Shared task progress loading
 - Shared task progress editing
-- Progress persistence
+- Progress persistence through Supabase when available, with local per-run fallback snapshots for raid progress and notes
 - Realtime task progress sync
 - Manual refresh reload
 - Supabase-backed map telemetry and boss intel with seeded fallback rows

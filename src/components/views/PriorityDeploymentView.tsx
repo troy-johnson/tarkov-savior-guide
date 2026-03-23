@@ -6,6 +6,7 @@ interface PriorityDeploymentViewProps {
   activeMapBreakdown: Array<[string, number]>;
   bossIntel: BossIntelRecord;
   completion: number;
+  loading: boolean;
   mapTelemetry: MapTelemetryRecord;
   nextNonRaidSteps: StepView[];
   priorityMap: string;
@@ -21,6 +22,7 @@ export function PriorityDeploymentView({
   activeMapBreakdown,
   bossIntel,
   completion,
+  loading,
   mapTelemetry,
   nextNonRaidSteps,
   priorityMap,
@@ -61,6 +63,7 @@ export function PriorityDeploymentView({
                   <button
                     type="button"
                     className={`objective-checkbox status-${step.progress.status}`}
+                    disabled={loading}
                     onClick={() => void setStatus(step.id, checked ? 'not_started' : 'done')}
                     aria-label={`Mark ${step.title} ${checked ? 'not complete' : 'complete'}`}
                   >
@@ -182,6 +185,7 @@ export function PriorityDeploymentView({
           {prioritySteps.map((step) => (
             <TaskCard
               key={step.id}
+              disabled={loading}
               step={step}
               onStatusChange={(stepId, status) => void setStatus(stepId, status)}
               onNoteChange={(stepId, note) => void updateStep(stepId, { current_note: note, status: 'in_progress' })}
