@@ -1,6 +1,6 @@
 # Tarkov Savior Guide
 
-A lightweight shared-run dashboard that syncs Tarkov Savior quest progress across a squad with optional Supabase persistence.
+A shared-run dashboard that syncs Tarkov Savior quest progress across a squad with optional Supabase persistence.
 
 ## What the app does
 
