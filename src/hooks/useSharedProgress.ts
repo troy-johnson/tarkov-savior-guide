@@ -22,6 +22,23 @@ const DEFAULT_RUN_NAME = 'Shared Savior Run';
 const DEFAULT_MAP = 'Ground Zero';
 
 type RemoteHealth = 'connected' | 'degraded' | 'offline';
+type ForecastCategory = 'current' | 'next' | 'follow_on' | 'other_map' | 'excluded';
+type MapPriorityPlan = {
+  map: string;
+  weightedScore: number;
+  currentCount: number;
+  immediateCount: number;
+  followOnCount: number;
+  otherMapCount: number;
+  excludedCount: number;
+  setupCount: number;
+  currentSteps: StepView[];
+  setupSteps: StepView[];
+  immediateSteps: StepView[];
+  followOnSteps: StepView[];
+  otherMapSteps: StepView[];
+  excludedSteps: StepView[];
+};
 
 const createDefaultProgress = (runId: string, stepId: string): StepProgressRecord => ({
   run_id: runId,
@@ -158,6 +175,53 @@ const getStepRaidMaps = (step: Pick<QuestStepDefinition, 'map'>) => getRaidMapsF
 function getQuestActiveSortOrder(steps: StepView[]) {
   const nextRequired = steps.find((step) => step.is_required && step.progress.status !== 'done');
   return nextRequired?.sort_order;
+}
+
+function getStepVerb(step: Pick<QuestStepDefinition, 'title' | 'details'>) {
+  const text = `${step.title} ${step.details}`.trim().toLowerCase();
+  const match = text.match(/\b(locate|search|find|obtain|retrieve|collect|check|read|study|investigate|inspect|take|visit|activate|stash|plant|enter|use)\b/);
+  return match?.[1] ?? 'unknown';
+}
+
+function canChainSameRaid(previousStep: StepView, nextStep: StepView) {
+  const previousMaps = new Set(getStepRaidMaps(previousStep));
+  const sharedMaps = getStepRaidMaps(nextStep).filter((map) => previousMaps.has(map));
+  if (sharedMaps.length === 0) {
+    return false;
+  }
+
+  const previousVerb = getStepVerb(previousStep);
+  const nextVerb = getStepVerb(nextStep);
+  const sequentialPairs = new Set([
+    'locate:search',
+    'locate:find',
+    'locate:check',
+    'locate:read',
+    'find:read',
+    'find:check',
+    'find:collect',
+    'search:find',
+    'search:collect',
+    'search:obtain',
+    'search:read',
+    'check:find',
+    'check:collect',
+    'retrieve:read',
+    'retrieve:obtain',
+    'investigate:find',
+    'investigate:search',
+    'enter:find',
+    'enter:search',
+  ]);
+
+  if (sequentialPairs.has(`${previousVerb}:${nextVerb}`)) {
+    return true;
+  }
+
+  const previousText = `${previousStep.title} ${previousStep.details}`.toLowerCase();
+  const nextText = `${nextStep.title} ${nextStep.details}`.toLowerCase();
+  const sharedSubjects = ['apartment', 'camp', 'room', 'hideout', 'car', 'office', 'document', 'mailbox', 'note'];
+  return sharedSubjects.some((subject) => previousText.includes(subject) && nextText.includes(subject));
 }
 
 function hydrateQuestViews(
@@ -651,14 +715,24 @@ export function useSharedProgress() {
 
   const activeSteps = useMemo(() => storyQuests.flatMap((quest) => quest.activeSteps), [storyQuests]);
 
-  const mapPriorityPlans = useMemo(() => {
+  const mapPriorityPlans = useMemo<MapPriorityPlan[]>(() => {
+    const LOOKAHEAD_LIMIT = 5;
+    const MAX_SETUP_DEPTH = 2;
     const planByMap = new Map<string, {
       map: string;
+      weightedScore: number;
       currentStepIds: Set<string>;
-      potentialStepIds: Set<string>;
+      immediateStepIds: Set<string>;
+      followOnStepIds: Set<string>;
+      otherMapStepIds: Set<string>;
+      excludedStepIds: Set<string>;
       setupStepIds: Set<string>;
       currentSteps: StepView[];
       setupSteps: StepView[];
+      immediateSteps: StepView[];
+      followOnSteps: StepView[];
+      otherMapSteps: StepView[];
+      excludedSteps: StepView[];
     }>();
 
     const getPlan = (map: string) => {
@@ -667,15 +741,77 @@ export function useSharedProgress() {
       if (!plan) {
         plan = {
           map: canonicalMap,
+          weightedScore: 0,
           currentStepIds: new Set<string>(),
-          potentialStepIds: new Set<string>(),
+          immediateStepIds: new Set<string>(),
+          followOnStepIds: new Set<string>(),
+          otherMapStepIds: new Set<string>(),
+          excludedStepIds: new Set<string>(),
           setupStepIds: new Set<string>(),
           currentSteps: [],
           setupSteps: [],
+          immediateSteps: [],
+          followOnSteps: [],
+          otherMapSteps: [],
+          excludedSteps: [],
         };
         planByMap.set(canonicalMap, plan);
       }
       return plan;
+    };
+
+    const addStepToPlan = (
+      map: string,
+      category: ForecastCategory,
+      step: StepView,
+      setupSteps: StepView[],
+      score: number,
+    ) => {
+      const plan = getPlan(map);
+      let added = false;
+
+      if (category === 'current') {
+        if (!plan.currentStepIds.has(step.id)) {
+          plan.currentStepIds.add(step.id);
+          plan.currentSteps.push(step);
+          added = true;
+        }
+        if (!plan.immediateStepIds.has(step.id)) {
+          plan.immediateStepIds.add(step.id);
+          plan.immediateSteps.push(step);
+          added = true;
+        }
+      } else if (category === 'next') {
+        if (!plan.immediateStepIds.has(step.id)) {
+          plan.immediateStepIds.add(step.id);
+          plan.immediateSteps.push(step);
+          added = true;
+        }
+      } else if (category === 'follow_on') {
+        if (!plan.followOnStepIds.has(step.id)) {
+          plan.followOnStepIds.add(step.id);
+          plan.followOnSteps.push(step);
+          added = true;
+        }
+      } else if (category === 'other_map' && !plan.otherMapStepIds.has(step.id)) {
+        plan.otherMapStepIds.add(step.id);
+        plan.otherMapSteps.push(step);
+        added = true;
+      } else if (category === 'excluded' && !plan.excludedStepIds.has(step.id)) {
+        plan.excludedStepIds.add(step.id);
+        plan.excludedSteps.push(step);
+      }
+
+      if (added && category !== 'excluded') {
+        plan.weightedScore += score;
+      }
+
+      for (const setupStep of setupSteps) {
+        if (!plan.setupStepIds.has(setupStep.id)) {
+          plan.setupStepIds.add(setupStep.id);
+          plan.setupSteps.push(setupStep);
+        }
+      }
     };
 
     for (const quest of storyQuests) {
@@ -687,55 +823,79 @@ export function useSharedProgress() {
         continue;
       }
 
-      const reachableSetupSteps: StepView[] = [];
+      const lookaheadSteps = pendingRequiredSteps.slice(0, LOOKAHEAD_LIMIT);
+      const firstRaidIndex = lookaheadSteps.findIndex((step) => getStepRaidMaps(step).length > 0);
 
-      for (const step of pendingRequiredSteps) {
+      if (firstRaidIndex === -1) {
+        continue;
+      }
+
+      const setupPrefix = lookaheadSteps.slice(0, firstRaidIndex);
+      const initialRaidStep = lookaheadSteps[firstRaidIndex];
+      const initialRaidMaps = getStepRaidMaps(initialRaidStep);
+
+      for (const map of initialRaidMaps) {
+        const category: ForecastCategory = firstRaidIndex === 0 && initialRaidStep.isActive ? 'current' : 'next';
+        addStepToPlan(map, category, initialRaidStep, setupPrefix, category === 'current' ? 8 : 5);
+      }
+
+      let previousRaidStep = initialRaidStep;
+
+      for (let index = firstRaidIndex + 1; index < lookaheadSteps.length; index += 1) {
+        const step = lookaheadSteps[index];
         const raidMaps = getStepRaidMaps(step);
+
         if (raidMaps.length === 0) {
-          if (step.isActive) {
-            reachableSetupSteps.push(step);
-          }
           continue;
         }
 
-        for (const map of raidMaps) {
-          const plan = getPlan(map);
-          plan.potentialStepIds.add(step.id);
+        const setupSteps = lookaheadSteps.slice(0, index).filter((candidate) => getStepRaidMaps(candidate).length === 0);
 
-          if (step.isActive) {
-            if (!plan.currentStepIds.has(step.id)) {
-              plan.currentStepIds.add(step.id);
-              plan.currentSteps.push(step);
-            }
-            continue;
+        const sharesInitialMap = raidMaps.some((map) => initialRaidMaps.includes(map));
+        const sameRaidLikely = canChainSameRaid(previousRaidStep, step);
+        const chainDepth = index - firstRaidIndex;
+        const shortChain = chainDepth <= MAX_SETUP_DEPTH;
+
+        if (sharesInitialMap && sameRaidLikely && shortChain) {
+          for (const map of raidMaps.filter((raidMap) => initialRaidMaps.includes(raidMap))) {
+            addStepToPlan(map, 'follow_on', step, setupPrefix, 2);
           }
-
-          for (const setupStep of reachableSetupSteps) {
-            if (!plan.setupStepIds.has(setupStep.id)) {
-              plan.setupStepIds.add(setupStep.id);
-              plan.setupSteps.push(setupStep);
-            }
+        } else if (shortChain) {
+          for (const map of raidMaps) {
+            addStepToPlan(map, 'other_map', step, setupSteps.slice(0, MAX_SETUP_DEPTH), 1);
+          }
+        } else {
+          for (const map of raidMaps) {
+            addStepToPlan(map, 'excluded', step, [], 0);
           }
         }
 
-        if (step.isActive) {
-          reachableSetupSteps.push(step);
-        }
+        previousRaidStep = step;
       }
     }
 
     return [...planByMap.values()]
       .map((plan) => ({
         map: plan.map,
+        weightedScore: plan.weightedScore,
         currentCount: plan.currentStepIds.size,
-        potentialCount: plan.potentialStepIds.size,
+        immediateCount: plan.immediateStepIds.size,
+        followOnCount: plan.followOnStepIds.size,
+        otherMapCount: plan.otherMapStepIds.size,
+        excludedCount: plan.excludedStepIds.size,
         setupCount: plan.setupStepIds.size,
         currentSteps: plan.currentSteps.sort((left, right) => left.sort_order - right.sort_order),
         setupSteps: plan.setupSteps.sort((left, right) => left.sort_order - right.sort_order),
+        immediateSteps: plan.immediateSteps.sort((left, right) => left.sort_order - right.sort_order),
+        followOnSteps: plan.followOnSteps.sort((left, right) => left.sort_order - right.sort_order),
+        otherMapSteps: plan.otherMapSteps.sort((left, right) => left.sort_order - right.sort_order),
+        excludedSteps: plan.excludedSteps.sort((left, right) => left.sort_order - right.sort_order),
       }))
       .sort(
         (left, right) =>
-          right.potentialCount - left.potentialCount ||
+          right.weightedScore - left.weightedScore ||
+          right.immediateCount - left.immediateCount ||
+          right.followOnCount - left.followOnCount ||
           right.currentCount - left.currentCount ||
           left.setupCount - right.setupCount ||
           left.map.localeCompare(right.map),
@@ -747,7 +907,10 @@ export function useSharedProgress() {
       mapPriorityPlans.map((plan) => ({
         map: plan.map,
         currentCount: plan.currentCount,
-        potentialCount: plan.potentialCount,
+        immediateCount: plan.immediateCount,
+        followOnCount: plan.followOnCount,
+        otherMapCount: plan.otherMapCount,
+        excludedCount: plan.excludedCount,
         setupCount: plan.setupCount,
       })),
     [mapPriorityPlans],

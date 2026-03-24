@@ -3,7 +3,15 @@ import { statusLabel, toDirectiveSubtitle, toRequiredGearList } from '../dashboa
 import type { BossIntelRecord, MapTelemetryRecord, RunRecord, StepStatus, StepView } from '../../types';
 
 interface PriorityDeploymentViewProps {
-  activeMapBreakdown: Array<{ map: string; currentCount: number; potentialCount: number; setupCount: number }>;
+  activeMapBreakdown: Array<{
+    map: string;
+    currentCount: number;
+    immediateCount: number;
+    followOnCount: number;
+    otherMapCount: number;
+    excludedCount: number;
+    setupCount: number;
+  }>;
   bossIntel: BossIntelRecord;
   completion: number;
   loading: boolean;
@@ -40,7 +48,10 @@ export function PriorityDeploymentView({
   const leadStep = prioritySteps[0];
   const gearList = leadStep ? toRequiredGearList([leadStep]) : [];
   const selectedMapSummary = activeMapBreakdown.find(({ map }) => map === selectedPriorityMap);
-  const projectedStackCount = selectedMapSummary?.potentialCount ?? prioritySteps.length;
+  const immediateCount = selectedMapSummary?.immediateCount ?? prioritySteps.length;
+  const followOnCount = selectedMapSummary?.followOnCount ?? 0;
+  const otherMapCount = selectedMapSummary?.otherMapCount ?? 0;
+  const excludedCount = selectedMapSummary?.excludedCount ?? 0;
 
   return (
     <>
@@ -59,8 +70,12 @@ export function PriorityDeploymentView({
             <div className="directive-setup">
               <p className="meta-label">STACK SETUP</p>
               <p className="directive-setup__summary">
-                Complete these {prioritySetupSteps.length} step{prioritySetupSteps.length === 1 ? '' : 's'} to open up{' '}
-                {projectedStackCount} active step{projectedStackCount === 1 ? '' : 's'} on {priorityMap}.
+                Complete these {prioritySetupSteps.length} step{prioritySetupSteps.length === 1 ? '' : 's'} to unlock{' '}
+                {immediateCount} immediately active step{immediateCount === 1 ? '' : 's'} on {priorityMap}
+                {followOnCount > 0 ? `, with ${followOnCount} possible same-raid follow-on step${followOnCount === 1 ? '' : 's'}` : ''}
+                {otherMapCount > 0 ? `, plus ${otherMapCount} near-term step${otherMapCount === 1 ? '' : 's'} on other maps` : ''}
+                {excludedCount > 0 ? ` (${excludedCount} long-chain step${excludedCount === 1 ? '' : 's'} excluded)` : ''}
+                .
               </p>
               <div className="directive-setup__list">
                 {prioritySetupSteps.map((step) => (
@@ -197,7 +212,12 @@ export function PriorityDeploymentView({
       <section className="details-section">
         <div className="section-heading">
           <h2>PRIORITY DEPLOYMENT</h2>
-          <p>{prioritySteps.length} active steps available on {priorityMap}</p>
+          <p>
+            {immediateCount} immediate on {priorityMap}
+            {followOnCount > 0 ? ` · ${followOnCount} possible same-raid follow-ons` : ''}
+            {otherMapCount > 0 ? ` · ${otherMapCount} other-map unlocks nearby` : ''}
+            {excludedCount > 0 ? ` · ${excludedCount} long-chain excluded` : ''}
+          </p>
         </div>
         <div className="priority-summary-grid">
           <article className="panel analysis-panel">
@@ -206,7 +226,7 @@ export function PriorityDeploymentView({
               <p>Projected raid stack after clearing current blockers</p>
             </div>
             <div className="map-breakdown-list">
-              {activeMapBreakdown.map(({ map, currentCount, potentialCount, setupCount }) => (
+              {activeMapBreakdown.map(({ map, currentCount, immediateCount: mapImmediateCount, followOnCount: mapFollowOnCount, otherMapCount: mapOtherMapCount, excludedCount: mapExcludedCount, setupCount }) => (
                 <button
                   key={map}
                   type="button"
@@ -216,11 +236,14 @@ export function PriorityDeploymentView({
                   <div>
                     <strong>{map}</strong>
                     <p>
-                      {currentCount} active now · {potentialCount} total in stack
+                      {currentCount} active now · {mapImmediateCount} immediate after setup
+                      {mapFollowOnCount > 0 ? ` · ${mapFollowOnCount} possible follow-on` : ''}
+                      {mapOtherMapCount > 0 ? ` · ${mapOtherMapCount} other-map` : ''}
+                      {mapExcludedCount > 0 ? ` · ${mapExcludedCount} long-chain excluded` : ''}
                       {setupCount > 0 ? ` · ${setupCount} setup step${setupCount === 1 ? '' : 's'}` : ''}
                     </p>
                   </div>
-                  <span>{potentialCount}</span>
+                  <span>{mapImmediateCount}</span>
                 </button>
               ))}
             </div>
